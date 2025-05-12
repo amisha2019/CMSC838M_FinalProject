@@ -114,6 +114,7 @@ class BaseDataset(Dataset):
                 aug_idx = idx * self.num_augment + np.random.randint(self.num_augment)
         else:
             aug_idx = None
+            
         for t, clipped_t in zip(ep_t_list, clipped_ep_t_list):
             tt = time.time()
             if self.use_four_digit_time:
@@ -146,13 +147,14 @@ class BaseDataset(Dataset):
                     )
 
                 data_t = self._process_data_from_file(
-                    fn_state_t, ["pc", "rgb", "eef_pos"], aug_idx=aug_idx
+                    fn_state_t, ["pc", "rgb", "eef_pos", "physics_vec"], aug_idx=aug_idx
                 )
             else:
                 keys = ["action", "eef_pos", "pc", "physics_vec"]
                 if t > ep_t:
                     keys = ["action"]
                 data_t = self._process_data_from_file(fn_t, keys, aug_idx=aug_idx)
+                
             if t >= ep_t:
                 ret["action"].append(data_t["action"])
 
@@ -161,6 +163,7 @@ class BaseDataset(Dataset):
                     continue
                 if k in ret:
                     ret[k].append(data_t[k])
+                    
         ret = {k: np.array(v) for k, v in ret.items() if len(v) > 0}
 
         assert len(ret["pc"]) == self.obs_horizon
@@ -168,7 +171,7 @@ class BaseDataset(Dataset):
         assert len(ret["eef_pos"]) == self.obs_horizon
         assert len(ret["action"]) == self.pred_horizon
         
-        # Physics vector should only be from the first observation
+        # Process physics vector if it exists - keep only first observation's physics parameters
         if "physics_vec" in ret and len(ret["physics_vec"]) > 0:
             ret["physics_vec"] = ret["physics_vec"][0]
 
@@ -208,7 +211,12 @@ class BaseDataset(Dataset):
                 self.num_points,
                 replace=False if xyz.shape[0] >= self.num_points else True,
             )
-
+        if "physics_vec" in keys and "physics_vec" in data:
+            physics_vec = data["physics_vec"].astype(np.float32)
+        elif "physics_vec" in keys:
+            # Default if not found in data
+            physics_vec = np.array([0.5, 0.5, 0.5, 0.5], dtype=np.float32)
+            
         if "pc" in keys:
             if self.mode == "train" and self.shuffle_pc:
                 xyz = xyz[choice, :]
@@ -321,6 +329,9 @@ class BaseDataset(Dataset):
             assert ret["action"].dtype == np.float32
         if "offset" in keys:
             ret["offset"] = offset
+        if "physics_vec" in keys:
+            ret["physics_vec"] = physics_vec
+            
         del data
 
         return ret
