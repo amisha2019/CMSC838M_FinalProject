@@ -1,0 +1,7 @@
+- prefix=sim_mobile_fold_7dof_last_test
+- data.dataset.path=/fs/cml-scratch/amishab/data/fold/pcs
+- training.num_epochs=2
+- training.eval_interval=1
+- training.save_interval=1
+- training.vis_interval=1
+- use_wandb=True

@@ -1,0 +1,127 @@
+[2025-05-12 14:40:58,476][__main__][INFO] - Starting training...
+[2025-05-12 14:40:58,476][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-12 14:40:58,476][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-12 14:40:58,476][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-12 14:40:58,477][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-12 14:40:59,293][__main__][INFO] - Successfully initialized wandb
+[2025-05-12 14:41:02,036][__main__][INFO] - Initialized dataloader with 1787 samples
+[2025-05-12 14:41:44,918][__main__][INFO] - Initialized evaluation environment
+[2025-05-12 14:41:56,349][__main__][INFO] - Starting training from scratch
+[2025-05-12 14:42:06,139][__main__][INFO] - Epoch 0, Batch 0, Metrics: {'loss': tensor(1.1475, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.876101, 'mean_pred_noise_norm': 6.221779}
+[2025-05-12 14:42:06,276][__main__][INFO] - Epoch 0, Batch 1, Metrics: {'loss': tensor(1.1658, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.897343, 'mean_pred_noise_norm': 6.277904}
+[2025-05-12 14:42:06,409][__main__][INFO] - Epoch 0, Batch 2, Metrics: {'loss': tensor(1.1857, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.023024, 'mean_pred_noise_norm': 6.274456}
+[2025-05-12 14:42:06,542][__main__][INFO] - Epoch 0, Batch 3, Metrics: {'loss': tensor(1.1807, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.047799, 'mean_pred_noise_norm': 6.206657}
+[2025-05-12 14:42:06,673][__main__][INFO] - Epoch 0, Batch 4, Metrics: {'loss': tensor(1.1495, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.823217, 'mean_pred_noise_norm': 6.185097}
+[2025-05-12 14:42:06,805][__main__][INFO] - Epoch 0, Batch 5, Metrics: {'loss': tensor(1.1758, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.058746, 'mean_pred_noise_norm': 6.2054644}
+[2025-05-12 14:42:06,934][__main__][INFO] - Epoch 0, Batch 6, Metrics: {'loss': tensor(1.1506, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.871124, 'mean_pred_noise_norm': 6.225839}
+[2025-05-12 14:42:07,066][__main__][INFO] - Epoch 0, Batch 7, Metrics: {'loss': tensor(1.1444, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.805632, 'mean_pred_noise_norm': 6.1542187}
+[2025-05-12 14:42:07,189][__main__][INFO] - Epoch 0, Batch 8, Metrics: {'loss': tensor(1.1605, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.927131, 'mean_pred_noise_norm': 6.240943}
+[2025-05-12 14:42:07,320][__main__][INFO] - Epoch 0, Batch 9, Metrics: {'loss': tensor(1.1449, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.919857, 'mean_pred_noise_norm': 6.026442}
+[2025-05-12 14:42:07,451][__main__][INFO] - Epoch 0, Batch 10, Metrics: {'loss': tensor(1.1619, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.02948, 'mean_pred_noise_norm': 6.0018206}
+[2025-05-12 14:42:07,575][__main__][INFO] - Epoch 0, Batch 11, Metrics: {'loss': tensor(1.2070, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.247084, 'mean_pred_noise_norm': 5.9490814}
+[2025-05-12 14:42:07,707][__main__][INFO] - Epoch 0, Batch 12, Metrics: {'loss': tensor(1.1267, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.851454, 'mean_pred_noise_norm': 5.8248706}
+[2025-05-12 14:42:07,838][__main__][INFO] - Epoch 0, Batch 13, Metrics: {'loss': tensor(1.1520, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.994639, 'mean_pred_noise_norm': 5.806207}
+[2025-05-12 14:42:07,961][__main__][INFO] - Epoch 0, Batch 14, Metrics: {'loss': tensor(1.1474, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.047422, 'mean_pred_noise_norm': 5.6740503}
+[2025-05-12 14:42:08,092][__main__][INFO] - Epoch 0, Batch 15, Metrics: {'loss': tensor(1.1231, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.848937, 'mean_pred_noise_norm': 5.5558825}
+[2025-05-12 14:42:08,224][__main__][INFO] - Epoch 0, Batch 16, Metrics: {'loss': tensor(1.1250, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.9494915, 'mean_pred_noise_norm': 5.4470167}
+[2025-05-12 14:42:08,355][__main__][INFO] - Epoch 0, Batch 17, Metrics: {'loss': tensor(1.1367, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.133258, 'mean_pred_noise_norm': 5.356088}
+[2025-05-12 14:42:08,479][__main__][INFO] - Epoch 0, Batch 18, Metrics: {'loss': tensor(1.1059, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.772358, 'mean_pred_noise_norm': 5.2935414}
+[2025-05-12 14:42:08,601][__main__][INFO] - Epoch 0, Batch 19, Metrics: {'loss': tensor(1.0851, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.728985, 'mean_pred_noise_norm': 5.200733}
+[2025-05-12 14:42:08,733][__main__][INFO] - Epoch 0, Batch 20, Metrics: {'loss': tensor(1.1313, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.046417, 'mean_pred_noise_norm': 5.1068935}
+[2025-05-12 14:42:08,864][__main__][INFO] - Epoch 0, Batch 21, Metrics: {'loss': tensor(1.0848, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.891267, 'mean_pred_noise_norm': 5.0480814}
+[2025-05-12 14:42:08,995][__main__][INFO] - Epoch 0, Batch 22, Metrics: {'loss': tensor(1.0920, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.909014, 'mean_pred_noise_norm': 4.89021}
+[2025-05-12 14:42:09,129][__main__][INFO] - Epoch 0, Batch 23, Metrics: {'loss': tensor(1.0786, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.911612, 'mean_pred_noise_norm': 4.857258}
+[2025-05-12 14:42:09,260][__main__][INFO] - Epoch 0, Batch 24, Metrics: {'loss': tensor(1.0805, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.978353, 'mean_pred_noise_norm': 4.6597033}
+[2025-05-12 14:42:09,391][__main__][INFO] - Epoch 0, Batch 25, Metrics: {'loss': tensor(1.0799, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.839203, 'mean_pred_noise_norm': 4.606988}
+[2025-05-12 14:42:09,523][__main__][INFO] - Epoch 0, Batch 26, Metrics: {'loss': tensor(1.0879, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.974247, 'mean_pred_noise_norm': 4.5507965}
+[2025-05-12 14:42:09,654][__main__][INFO] - Epoch 0, Batch 27, Metrics: {'loss': tensor(1.0788, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.883188, 'mean_pred_noise_norm': 4.431669}
+[2025-05-12 14:42:09,778][__main__][INFO] - Epoch 0, Batch 28, Metrics: {'loss': tensor(1.0530, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.823133, 'mean_pred_noise_norm': 4.394676}
+[2025-05-12 14:42:09,909][__main__][INFO] - Epoch 0, Batch 29, Metrics: {'loss': tensor(1.0641, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.955827, 'mean_pred_noise_norm': 4.2788324}
+[2025-05-12 14:42:10,039][__main__][INFO] - Epoch 0, Batch 30, Metrics: {'loss': tensor(1.0882, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.012741, 'mean_pred_noise_norm': 4.16172}
+[2025-05-12 14:42:10,170][__main__][INFO] - Epoch 0, Batch 31, Metrics: {'loss': tensor(1.0626, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.052367, 'mean_pred_noise_norm': 4.0288734}
+[2025-05-12 14:42:10,301][__main__][INFO] - Epoch 0, Batch 32, Metrics: {'loss': tensor(1.0562, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.937982, 'mean_pred_noise_norm': 4.0896893}
+[2025-05-12 14:42:10,425][__main__][INFO] - Epoch 0, Batch 33, Metrics: {'loss': tensor(1.0505, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.8840065, 'mean_pred_noise_norm': 3.9813023}
+[2025-05-12 14:42:10,557][__main__][INFO] - Epoch 0, Batch 34, Metrics: {'loss': tensor(1.0762, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.046789, 'mean_pred_noise_norm': 3.9761367}
+[2025-05-12 14:42:10,689][__main__][INFO] - Epoch 0, Batch 35, Metrics: {'loss': tensor(1.0378, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.868174, 'mean_pred_noise_norm': 3.777567}
+[2025-05-12 14:42:10,821][__main__][INFO] - Epoch 0, Batch 36, Metrics: {'loss': tensor(1.0430, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.821883, 'mean_pred_noise_norm': 3.8025217}
+[2025-05-12 14:42:10,952][__main__][INFO] - Epoch 0, Batch 37, Metrics: {'loss': tensor(1.0482, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.971208, 'mean_pred_noise_norm': 3.7317948}
+[2025-05-12 14:42:11,082][__main__][INFO] - Epoch 0, Batch 38, Metrics: {'loss': tensor(1.0501, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.9514675, 'mean_pred_noise_norm': 3.7097957}
+[2025-05-12 14:42:11,194][__main__][INFO] - Epoch 0, Batch 39, Metrics: {'loss': tensor(1.0137, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.728022, 'mean_pred_noise_norm': 3.5189211}
+[2025-05-12 14:42:11,305][__main__][INFO] - Epoch 0, Batch 40, Metrics: {'loss': tensor(1.0454, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.999789, 'mean_pred_noise_norm': 3.579225}
+[2025-05-12 14:42:11,416][__main__][INFO] - Epoch 0, Batch 41, Metrics: {'loss': tensor(1.0456, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.0294075, 'mean_pred_noise_norm': 3.4719262}
+[2025-05-12 14:42:11,528][__main__][INFO] - Epoch 0, Batch 42, Metrics: {'loss': tensor(1.0107, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.762138, 'mean_pred_noise_norm': 3.4382725}
+[2025-05-12 14:42:11,639][__main__][INFO] - Epoch 0, Batch 43, Metrics: {'loss': tensor(1.0137, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.894144, 'mean_pred_noise_norm': 3.2969663}
+[2025-05-12 14:42:11,750][__main__][INFO] - Epoch 0, Batch 44, Metrics: {'loss': tensor(1.0577, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.18401, 'mean_pred_noise_norm': 3.272174}
+[2025-05-12 14:42:11,860][__main__][INFO] - Epoch 0, Batch 45, Metrics: {'loss': tensor(0.9992, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.720801, 'mean_pred_noise_norm': 3.2708507}
+[2025-05-12 14:42:11,974][__main__][INFO] - Epoch 0, Batch 46, Metrics: {'loss': tensor(1.0327, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.980723, 'mean_pred_noise_norm': 3.2240813}
+[2025-05-12 14:42:12,086][__main__][INFO] - Epoch 0, Batch 47, Metrics: {'loss': tensor(1.0244, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.0209465, 'mean_pred_noise_norm': 3.1069033}
+[2025-05-12 14:42:12,196][__main__][INFO] - Epoch 0, Batch 48, Metrics: {'loss': tensor(1.0330, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.990186, 'mean_pred_noise_norm': 3.1843429}
+[2025-05-12 14:42:12,307][__main__][INFO] - Epoch 0, Batch 49, Metrics: {'loss': tensor(1.0223, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.993673, 'mean_pred_noise_norm': 3.1309023}
+[2025-05-12 14:42:12,417][__main__][INFO] - Epoch 0, Batch 50, Metrics: {'loss': tensor(1.0372, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.0412035, 'mean_pred_noise_norm': 3.0537872}
+[2025-05-12 14:42:12,527][__main__][INFO] - Epoch 0, Batch 51, Metrics: {'loss': tensor(1.0021, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.859604, 'mean_pred_noise_norm': 3.0720086}
+[2025-05-12 14:42:12,638][__main__][INFO] - Epoch 0, Batch 52, Metrics: {'loss': tensor(1.0332, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.061946, 'mean_pred_noise_norm': 3.0197852}
+[2025-05-12 14:42:12,749][__main__][INFO] - Epoch 0, Batch 53, Metrics: {'loss': tensor(1.0100, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.931162, 'mean_pred_noise_norm': 2.855785}
+[2025-05-12 14:42:12,860][__main__][INFO] - Epoch 0, Batch 54, Metrics: {'loss': tensor(0.9816, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.770054, 'mean_pred_noise_norm': 2.9882443}
+[2025-05-12 14:42:12,937][__main__][INFO] - Saving checkpoint to /fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00000.pth
+[2025-05-12 14:42:16,220][__main__][INFO] - Successfully saved checkpoint to /fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00000.pth
+[2025-05-12 14:42:16,220][__main__][ERROR] - Failed to save checkpoint to /fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00000.pth: '/fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00000.pth' and '/fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00000.pth' are the same file
+[2025-05-12 14:42:16,820][__main__][INFO] - Epoch 1, Batch 0, Metrics: {'loss': tensor(1.0220, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.0756445, 'mean_pred_noise_norm': 2.861577}
+[2025-05-12 14:42:16,961][__main__][INFO] - Epoch 1, Batch 1, Metrics: {'loss': tensor(0.9765, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.736656, 'mean_pred_noise_norm': 2.840486}
+[2025-05-12 14:42:17,096][__main__][INFO] - Epoch 1, Batch 2, Metrics: {'loss': tensor(1.0272, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.110117, 'mean_pred_noise_norm': 2.6954572}
+[2025-05-12 14:42:17,228][__main__][INFO] - Epoch 1, Batch 3, Metrics: {'loss': tensor(0.9826, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.823341, 'mean_pred_noise_norm': 2.867498}
+[2025-05-12 14:42:17,360][__main__][INFO] - Epoch 1, Batch 4, Metrics: {'loss': tensor(0.9948, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.937041, 'mean_pred_noise_norm': 2.7112885}
+[2025-05-12 14:42:17,492][__main__][INFO] - Epoch 1, Batch 5, Metrics: {'loss': tensor(0.9899, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.871759, 'mean_pred_noise_norm': 2.61595}
+[2025-05-12 14:42:17,623][__main__][INFO] - Epoch 1, Batch 6, Metrics: {'loss': tensor(1.0431, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.262733, 'mean_pred_noise_norm': 2.6958928}
+[2025-05-12 14:42:17,745][__main__][INFO] - Epoch 1, Batch 7, Metrics: {'loss': tensor(1.0168, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.09535, 'mean_pred_noise_norm': 2.7137938}
+[2025-05-12 14:42:17,877][__main__][INFO] - Epoch 1, Batch 8, Metrics: {'loss': tensor(0.9890, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.875521, 'mean_pred_noise_norm': 2.6013577}
+[2025-05-12 14:42:18,008][__main__][INFO] - Epoch 1, Batch 9, Metrics: {'loss': tensor(1.0074, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.063478, 'mean_pred_noise_norm': 2.557498}
+[2025-05-12 14:42:18,140][__main__][INFO] - Epoch 1, Batch 10, Metrics: {'loss': tensor(1.0065, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.03359, 'mean_pred_noise_norm': 2.7000518}
+[2025-05-12 14:42:18,264][__main__][INFO] - Epoch 1, Batch 11, Metrics: {'loss': tensor(1.0065, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.056476, 'mean_pred_noise_norm': 2.6864629}
+[2025-05-12 14:42:18,386][__main__][INFO] - Epoch 1, Batch 12, Metrics: {'loss': tensor(1.0010, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.036853, 'mean_pred_noise_norm': 2.6414762}
+[2025-05-12 14:42:18,516][__main__][INFO] - Epoch 1, Batch 13, Metrics: {'loss': tensor(0.9952, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.9532175, 'mean_pred_noise_norm': 2.5964222}
+[2025-05-12 14:42:18,648][__main__][INFO] - Epoch 1, Batch 14, Metrics: {'loss': tensor(0.9809, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.866125, 'mean_pred_noise_norm': 2.624371}
+[2025-05-12 14:42:18,780][__main__][INFO] - Epoch 1, Batch 15, Metrics: {'loss': tensor(0.9726, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.89964, 'mean_pred_noise_norm': 2.8037796}
+[2025-05-12 14:42:18,911][__main__][INFO] - Epoch 1, Batch 16, Metrics: {'loss': tensor(0.9784, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.914989, 'mean_pred_noise_norm': 2.7893894}
+[2025-05-12 14:42:19,042][__main__][INFO] - Epoch 1, Batch 17, Metrics: {'loss': tensor(0.9774, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.912449, 'mean_pred_noise_norm': 2.5943952}
+[2025-05-12 14:42:19,173][__main__][INFO] - Epoch 1, Batch 18, Metrics: {'loss': tensor(0.9931, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.983015, 'mean_pred_noise_norm': 2.644823}
+[2025-05-12 14:42:19,305][__main__][INFO] - Epoch 1, Batch 19, Metrics: {'loss': tensor(0.9859, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.010644, 'mean_pred_noise_norm': 2.4578502}
+[2025-05-12 14:42:19,437][__main__][INFO] - Epoch 1, Batch 20, Metrics: {'loss': tensor(1.0053, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.111355, 'mean_pred_noise_norm': 2.5672445}
+[2025-05-12 14:42:19,570][__main__][INFO] - Epoch 1, Batch 21, Metrics: {'loss': tensor(0.9897, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.082945, 'mean_pred_noise_norm': 2.600162}
+[2025-05-12 14:42:19,702][__main__][INFO] - Epoch 1, Batch 22, Metrics: {'loss': tensor(0.9882, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.991171, 'mean_pred_noise_norm': 2.449191}
+[2025-05-12 14:42:19,824][__main__][INFO] - Epoch 1, Batch 23, Metrics: {'loss': tensor(0.9786, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.958045, 'mean_pred_noise_norm': 2.5044405}
+[2025-05-12 14:42:19,956][__main__][INFO] - Epoch 1, Batch 24, Metrics: {'loss': tensor(0.9641, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.894086, 'mean_pred_noise_norm': 2.4677987}
+[2025-05-12 14:42:20,088][__main__][INFO] - Epoch 1, Batch 25, Metrics: {'loss': tensor(0.9857, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.035991, 'mean_pred_noise_norm': 2.4239683}
+[2025-05-12 14:42:20,219][__main__][INFO] - Epoch 1, Batch 26, Metrics: {'loss': tensor(0.9634, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.891219, 'mean_pred_noise_norm': 2.411931}
+[2025-05-12 14:42:20,345][__main__][INFO] - Epoch 1, Batch 27, Metrics: {'loss': tensor(0.9840, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.057912, 'mean_pred_noise_norm': 2.4872699}
+[2025-05-12 14:42:20,477][__main__][INFO] - Epoch 1, Batch 28, Metrics: {'loss': tensor(0.9924, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.124805, 'mean_pred_noise_norm': 2.5157921}
+[2025-05-12 14:42:20,608][__main__][INFO] - Epoch 1, Batch 29, Metrics: {'loss': tensor(0.9489, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.843279, 'mean_pred_noise_norm': 2.51083}
+[2025-05-12 14:42:20,739][__main__][INFO] - Epoch 1, Batch 30, Metrics: {'loss': tensor(0.9540, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.8650875, 'mean_pred_noise_norm': 2.5077624}
+[2025-05-12 14:42:20,870][__main__][INFO] - Epoch 1, Batch 31, Metrics: {'loss': tensor(0.9775, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.078862, 'mean_pred_noise_norm': 2.468062}
+[2025-05-12 14:42:20,997][__main__][INFO] - Epoch 1, Batch 32, Metrics: {'loss': tensor(0.9877, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.121204, 'mean_pred_noise_norm': 2.5586371}
+[2025-05-12 14:42:21,128][__main__][INFO] - Epoch 1, Batch 33, Metrics: {'loss': tensor(0.9515, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.86543, 'mean_pred_noise_norm': 2.4314563}
+[2025-05-12 14:42:21,260][__main__][INFO] - Epoch 1, Batch 34, Metrics: {'loss': tensor(0.9470, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.879356, 'mean_pred_noise_norm': 2.4919922}
+[2025-05-12 14:42:21,391][__main__][INFO] - Epoch 1, Batch 35, Metrics: {'loss': tensor(0.9691, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.02242, 'mean_pred_noise_norm': 2.5283046}
+[2025-05-12 14:42:21,515][__main__][INFO] - Epoch 1, Batch 36, Metrics: {'loss': tensor(0.9702, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.098817, 'mean_pred_noise_norm': 2.6013618}
+[2025-05-12 14:42:21,647][__main__][INFO] - Epoch 1, Batch 37, Metrics: {'loss': tensor(0.9907, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.238146, 'mean_pred_noise_norm': 2.457112}
+[2025-05-12 14:42:21,778][__main__][INFO] - Epoch 1, Batch 38, Metrics: {'loss': tensor(0.9200, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.779478, 'mean_pred_noise_norm': 2.624661}
+[2025-05-12 14:42:21,890][__main__][INFO] - Epoch 1, Batch 39, Metrics: {'loss': tensor(0.9566, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.992177, 'mean_pred_noise_norm': 2.4865623}
+[2025-05-12 14:42:22,001][__main__][INFO] - Epoch 1, Batch 40, Metrics: {'loss': tensor(0.9454, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.968208, 'mean_pred_noise_norm': 2.6606078}
+[2025-05-12 14:42:22,112][__main__][INFO] - Epoch 1, Batch 41, Metrics: {'loss': tensor(0.9312, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.813662, 'mean_pred_noise_norm': 2.5798078}
+[2025-05-12 14:42:22,224][__main__][INFO] - Epoch 1, Batch 42, Metrics: {'loss': tensor(0.9516, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.994011, 'mean_pred_noise_norm': 2.5510645}
+[2025-05-12 14:42:22,336][__main__][INFO] - Epoch 1, Batch 43, Metrics: {'loss': tensor(0.9458, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.974555, 'mean_pred_noise_norm': 2.7069664}
+[2025-05-12 14:42:22,447][__main__][INFO] - Epoch 1, Batch 44, Metrics: {'loss': tensor(0.9470, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.938537, 'mean_pred_noise_norm': 2.6660292}
+[2025-05-12 14:42:22,558][__main__][INFO] - Epoch 1, Batch 45, Metrics: {'loss': tensor(0.9525, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.9648, 'mean_pred_noise_norm': 2.4838874}
+[2025-05-12 14:42:22,669][__main__][INFO] - Epoch 1, Batch 46, Metrics: {'loss': tensor(0.9242, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.832289, 'mean_pred_noise_norm': 2.6297698}
+[2025-05-12 14:42:22,780][__main__][INFO] - Epoch 1, Batch 47, Metrics: {'loss': tensor(0.9662, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.151424, 'mean_pred_noise_norm': 2.550792}
+[2025-05-12 14:42:22,892][__main__][INFO] - Epoch 1, Batch 48, Metrics: {'loss': tensor(0.9290, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.855019, 'mean_pred_noise_norm': 2.5692482}
+[2025-05-12 14:42:23,003][__main__][INFO] - Epoch 1, Batch 49, Metrics: {'loss': tensor(0.9250, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.914507, 'mean_pred_noise_norm': 2.758893}
+[2025-05-12 14:42:23,114][__main__][INFO] - Epoch 1, Batch 50, Metrics: {'loss': tensor(0.9204, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.896507, 'mean_pred_noise_norm': 2.817779}
+[2025-05-12 14:42:23,225][__main__][INFO] - Epoch 1, Batch 51, Metrics: {'loss': tensor(0.9166, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.825489, 'mean_pred_noise_norm': 2.7081363}
+[2025-05-12 14:42:23,336][__main__][INFO] - Epoch 1, Batch 52, Metrics: {'loss': tensor(0.9315, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.02821, 'mean_pred_noise_norm': 2.8050747}
+[2025-05-12 14:42:23,447][__main__][INFO] - Epoch 1, Batch 53, Metrics: {'loss': tensor(0.9039, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 14.766569, 'mean_pred_noise_norm': 2.7793822}
+[2025-05-12 14:42:23,558][__main__][INFO] - Epoch 1, Batch 54, Metrics: {'loss': tensor(0.9271, device='cuda:0', grad_fn=<MseLossBackward0>), 'mean_gt_noise_norm': 15.019355, 'mean_pred_noise_norm': 2.8272958}
+[2025-05-12 14:42:23,660][__main__][INFO] - Running evaluation at epoch 1
+[2025-05-12 14:42:28,991][__main__][ERROR] - Error during evaluation: 'DPAgent' object has no attribute 'get_action'
+[2025-05-12 14:42:28,991][__main__][INFO] - Saving checkpoint to /fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00001.pth
+[2025-05-12 14:42:32,395][__main__][INFO] - Successfully saved checkpoint to /fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00001.pth
+[2025-05-12 14:42:32,396][__main__][ERROR] - Failed to save checkpoint to /fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00001.pth: '/fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00001.pth' and '/fs/nexus-projects/Sketch_VLM_RL/equibit/ckpt00001.pth' are the same file
