@@ -58,6 +58,8 @@ data:
 
 model:
   hidden_dim: 32
+  physics_embed_dim: 4      # [mass, friction, stiffness, damping]  
+  use_physics_embed: true
   noise_scheduler:
     _target_: diffusers.schedulers.scheduling_ddpm.DDPMScheduler
     num_train_timesteps: 100

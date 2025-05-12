@@ -44,6 +44,12 @@ class BaseEnv(object):
         self.base_diff_thresh = (0.015, 0.015, 0.02)
         self.debug = False
         self._last_action_time = None
+        
+        # Physics parameters (normalized to [0, 1])
+        self.object_mass_norm = 0.5  # Default value, will be randomized
+        self.surface_friction_norm = 0.5  # Default value, will be randomized
+        self.object_stiffness_norm = 0.5  # Default value, will be randomized
+        self.object_damping_norm = 0.5  # Default value, will be randomized
 
         self._init_robots()
         self._init_rendering()
@@ -453,6 +459,32 @@ class BaseEnv(object):
 
     def _randomize_object_scales(self):
         # initialize object randomizations
+        object_rotation = np.zeros(3)
+        if self.randomize_rotation:
+            while True:
+                # prevent degenerate configuration where fabric can't be folded
+                rotation = self.rng.uniform(0, 2 * np.pi)
+                if np.abs(wrap_angle(rotation) / np.pi * 180) <= 60:
+                    break
+            object_rotation = np.array([0.0, 0.0, rotation])
+        self._object_rotation = object_rotation
+        
+        # Randomize physics properties
+        # Mass: 0.5× to 2× (normalized to [0, 1])
+        self.object_mass_norm = self.rng.uniform(0.0, 1.0)
+        real_mass_factor = 0.5 + 1.5 * self.object_mass_norm  # Maps from [0,1] to [0.5,2.0]
+        
+        # Friction: 0.2 to 1.0 (normalized to [0, 1])
+        self.surface_friction_norm = self.rng.uniform(0.0, 1.0)
+        real_friction = 0.2 + 0.8 * self.surface_friction_norm  # Maps from [0,1] to [0.2,1.0]
+        
+        # Stiffness: 0.3 to 0.9 (normalized to [0, 1])
+        self.object_stiffness_norm = self.rng.uniform(0.0, 1.0)
+        real_stiffness = 0.3 + 0.6 * self.object_stiffness_norm  # Maps from [0,1] to [0.3,0.9]
+        
+        # Damping: kept constant for now but could be randomized
+        self.object_damping_norm = 0.5
+
         if self.randomize_scale:
             scale_low, scale_high = self.args.scale_low, self.args.scale_high
             aspect_limit = self.args.scale_aspect_limit
@@ -465,10 +497,6 @@ class BaseEnv(object):
         else:
             self._rigid_object_scale = np.array([1.0, 1.0, 1.0])
             self._soft_object_scale = np.array([1.0, 1.0])
-        if self.randomize_rotation:
-            self._object_rotation = [0.0, 0.0, self.rng.rand() * np.pi * 2]
-        else:
-            self._object_rotation = [0.0, 0.0, 0.0]
         if self.randomize_position:
             self.scene_offset = self.rng.randn(2) * self.rand_pos_scale
         else:
@@ -1053,3 +1081,12 @@ class BaseEnv(object):
             return partial_pc, seg
         else:
             return partial_pc
+
+    def get_physics_vector(self):
+        """Return physics params normalised to [0,1]."""
+        return np.array([
+            self.object_mass_norm,
+            self.surface_friction_norm,
+            self.object_stiffness_norm,
+            self.object_damping_norm,
+        ], dtype=np.float32)

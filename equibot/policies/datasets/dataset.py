@@ -106,7 +106,7 @@ class BaseDataset(Dataset):
         end_t = ep_t + self.pred_horizon
         ep_t_list = np.arange(start_t, end_t)
         clipped_ep_t_list = np.clip(ep_t_list, 0, self.ep_length_dict[key_fn(fn)] - 1)
-        ret = dict(pc=[], rgb=[], eef_pos=[], eef_rot=[], action=[], offset=[])
+        ret = dict(pc=[], rgb=[], eef_pos=[], eef_rot=[], action=[], offset=[], physics_vec=[])
         if self.num_augment > 0:
             if self.same_aug_per_sample:
                 aug_idx = np.random.randint(self.num_augment)
@@ -149,7 +149,7 @@ class BaseDataset(Dataset):
                     fn_state_t, ["pc", "rgb", "eef_pos"], aug_idx=aug_idx
                 )
             else:
-                keys = ["action", "eef_pos", "pc"]
+                keys = ["action", "eef_pos", "pc", "physics_vec"]
                 if t > ep_t:
                     keys = ["action"]
                 data_t = self._process_data_from_file(fn_t, keys, aug_idx=aug_idx)
@@ -167,21 +167,28 @@ class BaseDataset(Dataset):
         # assert len(ret["rgb"]) == self.obs_horizon
         assert len(ret["eef_pos"]) == self.obs_horizon
         assert len(ret["action"]) == self.pred_horizon
+        
+        # Physics vector should only be from the first observation
+        if "physics_vec" in ret and len(ret["physics_vec"]) > 0:
+            ret["physics_vec"] = ret["physics_vec"][0]
 
         if self.obs_horizon == 1 and self.pred_horizon == 1 and self.reduce_horizon_dim:
             ret = {k: v[0] for k, v in ret.items()}
 
         return ret
 
-    def _init_cache(self, keys_to_keep=["pc", "eef_pos", "action"]):
+    def _init_cache(self, keys_to_keep=["pc", "eef_pos", "action", "physics_vec"]):
         self.cache = dict()
         for fn in tqdm(self.file_names):
             # load the npz file and use the filename to create a new dictionary
             data = np.load(fn)
             self.cache[fn] = dict()
             for k in keys_to_keep:
-                assert k in data.keys(), f"Key {k} not found in {fn}"
-                self.cache[fn][k] = data[k].astype(np.float32)
+                if k in data.keys():
+                    self.cache[fn][k] = data[k].astype(np.float32)
+                elif k == "physics_vec":
+                    # If physics_vec is not in the data, use default values
+                    self.cache[fn][k] = np.array([0.5, 0.5, 0.5, 0.5], dtype=np.float32)
             del data
 
     def _process_data_from_file(

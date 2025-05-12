@@ -412,6 +412,7 @@ def run_demo(args, counter=0):
                         rgb=img,
                         action=action,
                         eef_pos=obs,
+                        physics_vec=env.get_physics_vector(),
                     )
                     saved_files.append(save_path)
 
