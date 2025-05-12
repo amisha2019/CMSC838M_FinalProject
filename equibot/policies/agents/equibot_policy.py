@@ -5,6 +5,7 @@ from torch import nn
 import torch.nn.functional as F
 
 from equibot.policies.vision.sim3_encoder import SIM3Vec4Latent
+from equibot.policies.vision.physics_encoder import PhysicsEncoder
 from equibot.policies.utils.diffusion.ema_model import EMAModel
 from equibot.policies.utils.equivariant_diffusion.conditional_unet1d import VecConditionalUnet1D
 
@@ -47,6 +48,13 @@ class EquiBotPolicy(nn.Module):
         else:
             self.encoder = None
         self.encoder_out_dim = cfg.model.encoder.c_dim
+        
+        if cfg.model.use_physics_embed:
+            self.physics_enc = PhysicsEncoder(cfg.model.physics_embed_dim).to(device)
+            self.physics_embed_dim = cfg.model.physics_embed_dim
+        else:
+            self.physics_enc = None
+            self.physics_embed_dim = 0
 
         self.num_eef = cfg.env.num_eef
         self.eef_dim = cfg.env.eef_dim
@@ -56,7 +64,7 @@ class EquiBotPolicy(nn.Module):
         elif cfg.model.obs_mode == "rgb":
             raise NotImplementedError()
         else:
-            self.obs_dim = self.encoder_out_dim + self.num_eef * (self.eef_dim // 3)
+            self.obs_dim = self.encoder_out_dim + self.physics_embed_dim + self.num_eef * (self.eef_dim // 3)
         self.action_dim = (2 if self.dof > 4 else 1) * self.num_eef
 
         num_scalar_dims = (0 if self.dof == 3 else 1) * self.num_eef
@@ -72,6 +80,11 @@ class EquiBotPolicy(nn.Module):
         self.nets = nn.ModuleDict(
             {"encoder": self.encoder, "noise_pred_net": self.noise_pred_net}
         )
+        
+        # Add physics encoder to ModuleDict if it exists
+        if self.physics_enc is not None:
+            self.nets["physics_enc"] = self.physics_enc
+            
         self.ema = EMAModel(model=copy.deepcopy(self.nets), power=0.75)
 
         self._init_torch_compile()
@@ -200,10 +213,25 @@ class EquiBotPolicy(nn.Module):
             z_pos = (z_pos - center) / scale
             z = feat_dict["so3"]
             z = z.reshape(B, Ho, -1, 3)
+            
+            if self.physics_enc is not None:
+                phys_latent = ema_nets["physics_enc"](pc[:, 0])          # [B, P]
+                # Reshape to match the z tensor dimensions
+                phys_latent = phys_latent.unsqueeze(1).repeat(1, Ho, 1).reshape(B, Ho, -1, 1)
+                # Expand to match the 3D dimension of other tensors
+                phys_latent = phys_latent.expand(-1, -1, -1, 3)
+                
             if self.dof == 7:
-                z = torch.cat([z, z_pos, z_dir], dim=-2)
+                if self.physics_enc is not None:
+                    z = torch.cat([z, z_pos, z_dir, phys_latent], dim=-2)
+                else:
+                    z = torch.cat([z, z_pos, z_dir], dim=-2)
             else:
-                z = torch.cat([z, z_pos], dim=-2)
+                if self.physics_enc is not None:
+                    z = torch.cat([z, z_pos, phys_latent], dim=-2)
+                else:
+                    z = torch.cat([z, z_pos], dim=-2)
+                    
         obs_cond_vec, obs_cond_scalar = z.reshape(B, -1, 3), (
             z_scalar.reshape(B, -1) if z_scalar is not None else None
         )
