@@ -1,4 +1,5 @@
 defaults:
+  - _self_
   - fold_mobile_dp
 
 agent:

@@ -1,7 +1,7 @@
 prefix: default
 device: cuda
 mode: train
-log_dir: logs/${mode}
+log_dir: logs2/${mode}
 eval_data_path: null
 use_wandb: true
 seed: 0
@@ -47,7 +47,7 @@ data:
     aug_zero_z_offset: false
     aug_center: [0., 0., 0.]
     shuffle_pc: true
-    num_workers: 12
+    num_workers: 8
     dof: ${env.dof}
     num_eef: ${env.num_eef}
     eef_dim: ${env.eef_dim}
@@ -99,5 +99,6 @@ hydra:
     dir: ${log_dir}/${prefix}
 
 wandb:
-  entity: [enter wandb entity name here]
-  project: [enter wandb project name here]
+  entity: amishab
+  project: equibot
+
