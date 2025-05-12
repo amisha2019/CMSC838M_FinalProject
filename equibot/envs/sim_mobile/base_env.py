@@ -45,11 +45,17 @@ class BaseEnv(object):
         self.debug = False
         self._last_action_time = None
         
-        # Physics parameters (normalized to [0, 1])
-        self.object_mass_norm = 0.5  # Default value, will be randomized
-        self.surface_friction_norm = 0.5  # Default value, will be randomized
-        self.object_stiffness_norm = 0.5  # Default value, will be randomized
-        self.object_damping_norm = 0.5  # Default value, will be randomized
+        # Normalization constants for physics parameters
+        self.mass_norm_range = (0.1, 2.0)
+        self.friction_norm_range = (0.5, 5.0)
+        self.stiffness_norm_range = (100.0, 300.0)
+        self.damping_norm_range = (0.5, 2.0)
+        
+        # Physics parameters - get from args if provided, otherwise use defaults
+        self.object_mass = getattr(args, 'deform_object_mass', 0.5)
+        self.friction_coeff = getattr(args, 'deform_friction_coeff', 1.0)
+        self.elastic_stiffness = getattr(args, 'deform_elastic_stiffness', 150.0)
+        self.damping_stiffness = getattr(args, 'deform_damping_stiffness', 1.0)
 
         self._init_robots()
         self._init_rendering()
@@ -471,19 +477,16 @@ class BaseEnv(object):
         
         # Randomize physics properties
         # Mass: 0.5× to 2× (normalized to [0, 1])
-        self.object_mass_norm = self.rng.uniform(0.0, 1.0)
-        real_mass_factor = 0.5 + 1.5 * self.object_mass_norm  # Maps from [0,1] to [0.5,2.0]
+        self.object_mass = self.rng.uniform(self.mass_norm_range[0], self.mass_norm_range[1])
         
         # Friction: 0.2 to 1.0 (normalized to [0, 1])
-        self.surface_friction_norm = self.rng.uniform(0.0, 1.0)
-        real_friction = 0.2 + 0.8 * self.surface_friction_norm  # Maps from [0,1] to [0.2,1.0]
+        self.friction_coeff = self.rng.uniform(self.friction_norm_range[0], self.friction_norm_range[1])
         
         # Stiffness: 0.3 to 0.9 (normalized to [0, 1])
-        self.object_stiffness_norm = self.rng.uniform(0.0, 1.0)
-        real_stiffness = 0.3 + 0.6 * self.object_stiffness_norm  # Maps from [0,1] to [0.3,0.9]
+        self.elastic_stiffness = self.rng.uniform(self.stiffness_norm_range[0], self.stiffness_norm_range[1])
         
         # Damping: kept constant for now but could be randomized
-        self.object_damping_norm = 0.5
+        self.damping_stiffness = 0.5
 
         if self.randomize_scale:
             scale_low, scale_high = self.args.scale_low, self.args.scale_high
@@ -559,10 +562,10 @@ class BaseEnv(object):
                 soft_obj_info["scale"],
                 soft_obj_info["pos"],
                 soft_obj_info["orn"],
-                args.deform_bending_stiffness,
-                args.deform_damping_stiffness,
-                args.deform_elastic_stiffness,
-                args.deform_friction_coeff,
+                self.damping_stiffness,
+                self.damping_stiffness,
+                self.elastic_stiffness,
+                self.friction_coeff,
                 mass=soft_obj_info["mass"],
                 collision_margin=soft_obj_info["collision_margin"],
                 fuzz_stiffness=False,
@@ -1083,10 +1086,21 @@ class BaseEnv(object):
             return partial_pc
 
     def get_physics_vector(self):
-        """Return physics params normalised to [0,1]."""
-        return np.array([
-            self.object_mass_norm,
-            self.surface_friction_norm,
-            self.object_stiffness_norm,
-            self.object_damping_norm,
-        ], dtype=np.float32)
+        """
+        Returns a normalized vector of physics parameters: [mass, friction, stiffness, damping]
+        Each value is normalized to [0, 1] range for consistent neural network input
+        """
+        # Normalize each parameter to [0, 1] range
+        mass_norm = (self.object_mass - self.mass_norm_range[0]) / (self.mass_norm_range[1] - self.mass_norm_range[0])
+        mass_norm = np.clip(mass_norm, 0.0, 1.0)
+        
+        friction_norm = (self.friction_coeff - self.friction_norm_range[0]) / (self.friction_norm_range[1] - self.friction_norm_range[0])
+        friction_norm = np.clip(friction_norm, 0.0, 1.0)
+        
+        stiffness_norm = (self.elastic_stiffness - self.stiffness_norm_range[0]) / (self.stiffness_norm_range[1] - self.stiffness_norm_range[0])
+        stiffness_norm = np.clip(stiffness_norm, 0.0, 1.0)
+        
+        damping_norm = (self.damping_stiffness - self.damping_norm_range[0]) / (self.damping_norm_range[1] - self.damping_norm_range[0])
+        damping_norm = np.clip(damping_norm, 0.0, 1.0)
+        
+        return np.array([mass_norm, friction_norm, stiffness_norm, damping_norm], dtype=np.float32)
