@@ -440,9 +440,16 @@ def run_demo(args, counter=0):
         print(f"Saved video to {video_path}.")
         return 1
     else:
-        for f in saved_files:
-            os.remove(f)
-        return 0
+        # DEBUGGING: Temporarily always keep files regardless of reward
+        # Original behavior: delete files if reward is below threshold
+        print(f"KEEPING FILES FOR DEBUGGING (reward {final_rew} < threshold {args.data_rew_threshold})")
+        video_path = os.path.join(args.data_out_dir, "images", episode_name + "_lowrew.mp4")
+        save_video(np.array(imgs), video_path, fps=10)
+        print(f"Saved debug video to {video_path}.")
+        # Uncomment below line to restore original behavior
+        # for f in saved_files:
+        #     os.remove(f)
+        return 1  # Always return success for debugging
 
 
 def get_args(parent=None):
@@ -480,6 +487,24 @@ def get_args(parent=None):
     parser.add_argument("--randomize_rotation", action="store_true")
     parser.add_argument("--randomize_scale", action="store_true")
     parser.add_argument("--uniform_scaling", action="store_true")
+    parser.add_argument(
+        "--scale_low", 
+        type=float, 
+        default=0.8, 
+        help="Lower bound for object scaling"
+    )
+    parser.add_argument(
+        "--scale_high", 
+        type=float, 
+        default=1.2, 
+        help="Upper bound for object scaling"
+    )
+    parser.add_argument(
+        "--scale_aspect_limit", 
+        type=float, 
+        default=1.3, 
+        help="Limit for aspect ratio in scaling"
+    )
     parser.add_argument(
         "--deform_bending_stiffness",
         type=float,
@@ -541,14 +566,16 @@ def main():
 
     pattern_ix = 0
     for i in tqdm(range(args.num_demos), desc="Demos"):
-        while True:
+        success = False
+        while not success:
             args.seed = (seed * 99999 + pattern_ix) % 100001
             args.seed_env = (seed_env * 99999 + pattern_ix) % 100001
             args.seed_cam = (seed_cam * 99999 + pattern_ix) % 100001
+            print(f"Attempting with episode ID: {pattern_ix}")
             success = run_demo(args, pattern_ix)
             pattern_ix += 1
             if success:
-                break
+                print(f"Success with episode ID: {pattern_ix-1}")
 
 
 if __name__ == "__main__":

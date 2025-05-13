@@ -470,7 +470,7 @@ class BaseEnv(object):
             while True:
                 # prevent degenerate configuration where fabric can't be folded
                 rotation = self.rng.uniform(0, 2 * np.pi)
-                if np.abs(wrap_angle(rotation) / np.pi * 180) <= 60:
+                if np.abs(wrap_angle(rotation, ref=0.0) / np.pi * 180) <= 60:
                     break
             object_rotation = np.array([0.0, 0.0, rotation])
         self._object_rotation = object_rotation
