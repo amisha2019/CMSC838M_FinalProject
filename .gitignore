@@ -1,4 +1,7 @@
 logs/
+logs2/
 **/__pycache__
 .DS_Store
 *.egg-info
+logs2/eval/eval_original_sim_mobile_fold_equibot_s1/wandb/run-20250513_230300-j4squspv/run-j4squspv.wandb
+logs2/eval/eval_original_sim_mobile_fold_equibot_s1/wandb/run-20250513_230300-j4squspv/files/output.log
