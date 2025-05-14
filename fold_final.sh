@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=equibot_prod
-#SBATCH --output=/fs/nexus-projects/Sketch_VLM_RL/equibit/prod_%j.log
-#SBATCH --error=/fs/nexus-projects/Sketch_VLM_RL/equibit/prod_%j.err
+#SBATCH --output=/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/prod_%j.log
+#SBATCH --error=/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/prod_%j.err
 #SBATCH --time=48:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=32G
@@ -21,13 +21,13 @@ export LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6
 export WANDB_MODE=offline
 
 # Create log directory with proper permissions
-mkdir -p /fs/nexus-projects/Sketch_VLM_RL/equibit
-chmod 775 /fs/nexus-projects/Sketch_VLM_RL/equibit
+mkdir -p /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
+chmod 775 /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
 
 # Print some debug info
 echo "Starting job at $(date)"
 echo "Working directory: $(pwd)"
-echo "Output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit"
+echo "Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/anukriti"
 echo "User: $(whoami)"
 echo "Groups: $(groups)"
 
@@ -35,7 +35,7 @@ echo "Groups: $(groups)"
 cd /fs/cml-scratch/amishab/equibot/
 
 # Run training with production settings
-# This now saves all logs, checkpoints, and videos to /fs/nexus-projects/Sketch_VLM_RL/equibit
+# This now saves all logs, checkpoints, and videos to /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
 python -m equibot.policies.train \
   --config-name fold_mobile_equibot \
   prefix=sim_mobile_fold_7dof_equibot_prod \
@@ -45,12 +45,12 @@ python -m equibot.policies.train \
 # Check results after completion
 echo "Job completed at $(date)"
 echo "Listing contents of the output directory:"
-ls -la /fs/nexus-projects/Sketch_VLM_RL/equibit/
+ls -la /fs/nexus-projects/Sketch_REBEL/equibot/anukriti/
 echo "Checking for checkpoint files:"
-find /fs/nexus-projects/Sketch_VLM_RL/equibit/ -name "*.pth" -type f | head -10
+find /fs/nexus-projects/Sketch_REBEL/equibot/anukriti/ -name "*.pth" -type f | head -10
 echo "Checking for video files:"
-find /fs/nexus-projects/Sketch_VLM_RL/equibit/ -name "*.mp4" -type f | head -10
+find /fs/nexus-projects/Sketch_REBEL/equibot/anukriti/ -name "*.mp4" -type f | head -10
 
 # Print info for syncing wandb runs to cloud (if desired)
 echo "To sync wandb runs to the cloud, run:"
-find /fs/nexus-projects/Sketch_VLM_RL/equibit/wandb -name "offline-run-*" -type d | xargs -I{} echo "wandb sync {}" 
+find /fs/nexus-projects/Sketch_REBEL/equibot/anukriti/wandb -name "offline-run-*" -type d | xargs -I{} echo "wandb sync {}" 

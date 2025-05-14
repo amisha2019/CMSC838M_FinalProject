@@ -99,6 +99,6 @@ hydra:
     dir: ${log_dir}/${prefix}
 
 wandb:
-  entity: amishab
-  project: equibot
+  entity: anukriti
+  project: equibot_new
 

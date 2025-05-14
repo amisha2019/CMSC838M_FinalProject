@@ -36,7 +36,7 @@ def organize_obs(render, rgb_render, state):
 def run_eval(
     env,
     agent,
-    vis=False,
+    vis=True,
     num_episodes=1,
     log_dir=None,
     reduce_horizon_dim=True,
@@ -45,6 +45,7 @@ def run_eval(
     ckpt_name=None,
 ):
     if vis:
+        print("!!!!!!vis is true")
         vis_frames = []
 
     if hasattr(agent, "obs_horizon") and hasattr(agent, "ac_horizon"):
@@ -93,9 +94,18 @@ def run_eval(
                         )
 
             # predict actions
+            # st = time.time()
+            # ac, ac_dict = agent.act(agent_obs, return_dict=True)
+            # print(f"Inference time: {time.time() - st:.3f}s")
+                        # predict actions (support both EquiBotAgent.get_action and DPAgent.act)
             st = time.time()
-            ac, ac_dict = agent.act(agent_obs, return_dict=True)
+            with torch.no_grad():
+                if hasattr(agent, "get_action"):
+                    ac, ac_dict = agent.get_action(agent_obs, return_dict=True)
+                else:
+                    ac, ac_dict = agent.act(agent_obs, return_dict=True)
             print(f"Inference time: {time.time() - st:.3f}s")
+
             if ac_dict is not None:
                 if (
                     "expected_eef_pos" in ac_dict
@@ -262,26 +272,38 @@ def main(cfg):
         mean_rew = eval_metrics["rew"]
         print(f"Evaluation results: mean rew = {mean_rew}")
         rew_list.append(mean_rew)
+        save_filename = os.path.join(
+            os.getcwd(), f"vis_{ckpt_name}_rew{mean_rew:.3f}.mp4"
+        )
         if cfg.use_wandb:
             wandb.log(
                 {"eval/" + k: v for k, v in eval_metrics.items() if k != "vis_rollout"}
             )
-        else:
-            save_filename = os.path.join(
-                os.getcwd(), f"vis_{ckpt_name}_rew{mean_rew:.3f}.mp4"
-            )
         if "vis_rollout" in eval_metrics:
-            if len(eval_metrics["vis_rollout"].shape) == 4:
-                save_video(eval_metrics["vis_rollout"], save_filename, fps=30)
+            vids = eval_metrics["vis_rollout"]
+            # print("!!!!!vids", vids)
+            print("!!!!!vids shape:", vids.shape if hasattr(vids, 'shape') else "no shape")
+            print("!!!!!vids type:", type(vids))
+            print("!!!!!vids[0] type:", type(vids[0]) if len(vids) > 0 else "empty")
+            print("!!!!!vids[0] shape:", vids[0].shape if len(vids) > 0 and hasattr(vids[0], 'shape') else "no shape")
+            print("heyyyy, making videos")
+            print("!!!!!Current working directory:", os.getcwd())
+            # single‐video (no per‐episode split)
+            if vids.ndim == 4:
+                save_video(vids, save_filename, fps=30)
+                print("!!!!!save_filename full path:", os.path.abspath(save_filename))
             else:
-                assert len(eval_metrics["vis_rollout"][0].shape) == 4
-                for eval_idx, eval_video in enumerate(eval_metrics["vis_rollout"]):
-                    episode_rew = eval_metrics["rew_values"][eval_idx]
-                    save_filename = os.path.join(
-                        os.getcwd(),
-                        f"vis_{ckpt_name}_ep{eval_idx}_rew{episode_rew:.3f}.mp4",
-                    )
-                    save_video(eval_video, save_filename)
+                print("!!!!!I am in else")
+                # per‐episode videos—use get() to avoid KeyError
+                rew_vals = eval_metrics.get("rew_values", [None] * len(vids))
+                for idx, video in enumerate(vids):
+                    ep_rew = rew_vals[idx]
+                    tag    = f"_rew{ep_rew:.3f}" if ep_rew is not None else ""
+                    fname  = f"vis_{ckpt_name}_ep{idx}{tag}.mp4"
+                    full_path = os.path.join(os.getcwd(), fname)
+                    print(f"!!!!!Saving video {idx} to full path:", os.path.abspath(full_path))
+                    save_video(video, full_path)
+
         del eval_metrics
     np.savez(os.path.join(os.getcwd(), "info.npz"), rews=np.array(rew_list))
 

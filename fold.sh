@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=equibot_train
-#SBATCH --output=/fs/nexus-projects/Sketch_VLM_RL/equibit/train_%j.log
-#SBATCH --error=/fs/nexus-projects/Sketch_VLM_RL/equibit/train_%j.err
+#SBATCH --output=/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/train_%j.log
+#SBATCH --error=/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/train_%j.err
 #SBATCH --time=0:30:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=32G
@@ -19,7 +19,7 @@ conda activate lfd
 export LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6
 
 # Create log directory
-mkdir -p /fs/nexus-projects/Sketch_VLM_RL/equibit
+mkdir -p /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
 
 # Change to project directory
 cd /fs/cml-scratch/amishab/equibot/

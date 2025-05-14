@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=equibot_fix
-#SBATCH --output=/fs/nexus-projects/Sketch_VLM_RL/equibit/fix_%j.log
-#SBATCH --error=/fs/nexus-projects/Sketch_VLM_RL/equibit/fix_%j.err
+#SBATCH --output=/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/fix_%j.log
+#SBATCH --error=/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/fix_%j.err
 #SBATCH --time=0:15:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=32G
@@ -21,16 +21,16 @@ export LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6
 export WANDB_MODE=offline
 
 # Clean up previous files
-rm -f /fs/nexus-projects/Sketch_VLM_RL/equibit/train.log
+rm -f /fs/nexus-projects/Sketch_REBEL/equibot/anukriti/train.log
 
 # Create log directory with proper permissions
-mkdir -p /fs/nexus-projects/Sketch_VLM_RL/equibit
-chmod 775 /fs/nexus-projects/Sketch_VLM_RL/equibit
+mkdir -p /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
+chmod 775 /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
 
 # Print debug info
 echo "Starting quick fix test at $(date)"
 echo "Working directory: $(pwd)"
-echo "Output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit"
+echo "Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/anukriti"
 
 # Change to project directory
 cd /fs/cml-scratch/amishab/equibot/
@@ -49,4 +49,4 @@ python -m equibot.policies.train \
 # Check results
 echo "Test completed at $(date)"
 echo "Listing logs directory:"
-ls -la /fs/nexus-projects/Sketch_VLM_RL/equibit/ 
+ls -la /fs/nexus-projects/Sketch_REBEL/equibot/anukriti/ 
