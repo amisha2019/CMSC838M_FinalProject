@@ -213,19 +213,44 @@ class EquiBotAgent(DPAgent):
 
             pdb.set_trace()
 
+        # Add physics supervision loss if enabled
+        if hasattr(self.cfg.model, "use_physics_supervision") and self.cfg.model.use_physics_supervision:
+            # Debug the point cloud shape
+            print(f"Point cloud shape: {batch['pc'].shape}")
+            
+            # Use only the first observation point cloud
+            pc_physics = batch["pc"][:, 0] if batch["pc"].dim() == 4 else batch["pc"]
+            print(f"Physics PC shape: {pc_physics.shape}")
+            
+            # predict then reconstruct the physics vector
+            phys_latent = self.actor.physics_enc(pc_physics)            # [B, D]
+            phys_recon = self.actor.physics_enc.decoder(phys_latent)     # [B, D]
+            L_phys = nn.functional.mse_loss(phys_recon, batch["physics_vec"])
+            total_loss = loss + self.cfg.loss.lambda_phys * L_phys
+            
+            # Update metrics to include physics loss
+            metrics_phys = {
+                "L_diff": loss.item(),
+                "L_phys": L_phys.item(),
+            }
+        else:
+            total_loss = loss
+            metrics_phys = {"L_diff": loss.item()}
+
         self.optimizer.zero_grad()
-        loss.backward()
+        total_loss.backward()
         self.optimizer.step()
         self.lr_scheduler.step()
-
+        
         self.actor.step_ema()
 
         metrics = {
-            "loss": loss,
+            "loss": total_loss,
             "normalized_gt_ac_max": np.max(
                 np.abs(vec_eef_action.reshape(-1, 3).detach().cpu().numpy()), axis=0
             ).mean(),
         }
+        metrics.update(metrics_phys)
         if self.dof == 7:
             metrics.update(
                 {

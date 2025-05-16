@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from equibot.policies.vision.sim3_encoder import SIM3Vec4Latent
 from equibot.policies.utils.diffusion.ema_model import EMAModel
 from equibot.policies.utils.equivariant_diffusion.conditional_unet1d import VecConditionalUnet1D
+from equibot.policies.vision.physics_encoder import PhysicsEncoder
 
 
 def vec2mat(vec):
@@ -47,6 +48,12 @@ class EquiBotPolicy(nn.Module):
         else:
             self.encoder = None
         self.encoder_out_dim = cfg.model.encoder.c_dim
+        
+        # Initialize physics encoder if physics embedding is enabled
+        if hasattr(cfg.model, "use_physics_embed") and cfg.model.use_physics_embed:
+            self.physics_enc = PhysicsEncoder(out_dim=cfg.model.physics_embed_dim)
+        else:
+            self.physics_enc = None
 
         self.num_eef = cfg.env.num_eef
         self.eef_dim = cfg.env.eef_dim
@@ -72,6 +79,9 @@ class EquiBotPolicy(nn.Module):
         self.nets = nn.ModuleDict(
             {"encoder": self.encoder, "noise_pred_net": self.noise_pred_net}
         )
+        if self.physics_enc is not None:
+            self.nets["physics_enc"] = self.physics_enc
+            
         self.ema = EMAModel(model=copy.deepcopy(self.nets), power=0.75)
 
         self._init_torch_compile()

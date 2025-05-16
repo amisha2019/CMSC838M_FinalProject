@@ -1,0 +1,16 @@
+mode: train
+seed: 42
+data_path: /fs/nexus-projects/Sketch_REBEL/equibot/data/fold_phy/pcs
+use_wandb: false
+model:
+  use_physics_embed: true
+  physics_embed_dim: 4
+  use_physics_supervision: true
+loss:
+  lambda_phys: 0.1
+training:
+  batch_size: 32
+  max_epochs: 50
+  learning_rate: 0.0001
+  save_interval: 5
+  eval_interval: 10

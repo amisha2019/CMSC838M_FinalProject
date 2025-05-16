@@ -1,0 +1,43 @@
+mode: train
+seed: 42
+use_wandb: false
+data:
+  dataset_class: base_dataset
+  dataset:
+    path: /fs/nexus-projects/Sketch_REBEL/equibot/data/fold_phy/pcs
+    num_points: 1024
+    num_workers: 8
+    dof: 4
+    num_eef: 1
+    eef_dim: 3
+    num_augment: 0
+    shuffle_pc: true
+    aug_keep_original: true
+    same_aug_per_sample: true
+    aug_scale_low: 0.5
+    aug_scale_high: 1.5
+    aug_scale_aspect_limit: 1.0
+    aug_scale_rot: -1
+    aug_scale_pos: 0.1
+    aug_zero_z_offset: false
+    aug_center:
+    - 0.0
+    - 0.0
+    - 0.0
+    reduce_horizon_dim: false
+model:
+  use_physics_embed: true
+  physics_embed_dim: 4
+  use_physics_supervision: true
+loss:
+  lambda_phys: 0.1
+training:
+  batch_size: 32
+  max_epochs: 50
+  learning_rate: 0.0001
+  save_interval: 5
+  eval_interval: 10
+env:
+  dof: 4
+  num_eef: 1
+  eef_dim: 3

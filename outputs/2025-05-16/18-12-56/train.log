@@ -1,0 +1,9 @@
+[2025-05-16 18:12:56,560][__main__][INFO] - Starting training...
+[2025-05-16 18:12:56,561][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 18:12:56,561][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
+[2025-05-16 18:12:56,561][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_REBEL/equibot/anukriti
+[2025-05-16 18:12:56,561][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 18:13:01,696][__main__][INFO] - Initialized dataloader with 3163 samples
+[2025-05-16 18:13:01,728][__main__][ERROR] - Failed to initialize evaluation environment: Key 'num_eval_episodes' is not in struct
+    full_key: training.num_eval_episodes
+    object_type=dict

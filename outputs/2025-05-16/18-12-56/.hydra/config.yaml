@@ -1,0 +1,67 @@
+mode: train
+seed: 42
+use_wandb: false
+agent:
+  agent_name: equibot
+data:
+  dataset_class: base_dataset
+  dataset:
+    path: /fs/nexus-projects/Sketch_REBEL/equibot/data/fold_phy/pcs
+    num_points: 1024
+    num_workers: 8
+    dof: 4
+    num_eef: 1
+    eef_dim: 3
+    num_augment: 0
+    shuffle_pc: true
+    aug_keep_original: true
+    same_aug_per_sample: true
+    aug_scale_low: 0.5
+    aug_scale_high: 1.5
+    aug_scale_aspect_limit: 1.0
+    aug_scale_rot: -1
+    aug_scale_pos: 0.1
+    aug_zero_z_offset: false
+    aug_center:
+    - 0.0
+    - 0.0
+    - 0.0
+    reduce_horizon_dim: false
+    min_demo_length: 15
+    num_training_steps: 100000
+model:
+  use_physics_embed: true
+  physics_embed_dim: 4
+  use_physics_supervision: true
+  obs_horizon: 2
+  ac_horizon: 8
+  pred_horizon: 16
+  obs_mode: pc
+  ac_mode: rel
+loss:
+  lambda_phys: 0.1
+training:
+  batch_size: 32
+  num_epochs: 50
+  learning_rate: 0.0001
+  save_interval: 5
+  eval_interval: 10
+env:
+  env_class: fold
+  dof: 4
+  num_eef: 1
+  eef_dim: 3
+  args:
+    num_eef: 1
+    dof: 4
+    seed: 42
+    obs_mode: pc
+    ac_mode: rel
+    max_episode_length: 100
+    num_points: 1024
+    randomize_rotation: false
+    randomize_scale: false
+    scale_low: 1.0
+    scale_high: 1.0
+    scale_aspect_limit: 100.0
+    uniform_scaling: false

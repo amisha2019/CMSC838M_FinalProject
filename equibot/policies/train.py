@@ -25,8 +25,14 @@ def main(cfg):
     assert cfg.mode == "train"
     np.random.seed(cfg.seed)
     
+    # Allow overriding output directory from command line
+    custom_output_dir = os.environ.get('CUSTOM_OUTPUT_DIR')
+    
     # Fix Hydra output directory
-    output_dir = "/fs/nexus-projects/Sketch_REBEL/equibot/anukriti"
+    if custom_output_dir:
+        output_dir = custom_output_dir
+    else:
+        output_dir = "/fs/nexus-projects/Sketch_REBEL/equibot/anukriti"
     os.makedirs(output_dir, exist_ok=True)
     
     # Get Hydra's current output directory
@@ -218,25 +224,26 @@ def main(cfg):
         ):
             save_path = os.path.join(output_dir, f"ckpt{epoch_ix:05d}.pth")
             logger.info(f"Saving checkpoint to {save_path}")
-            try:
-                num_ckpt_to_keep = 10
-                if len(list(glob(os.path.join(output_dir, "ckpt*.pth")))) > num_ckpt_to_keep:
-                    # remove old checkpoints
-                    for fn in list(sorted(glob(os.path.join(output_dir, "ckpt*.pth"))))[
-                        :-num_ckpt_to_keep
-                    ]:
-                        os.remove(fn)
-                        logger.info(f"Removed old checkpoint: {fn}")
-                agent.save_snapshot(save_path)
-                logger.info(f"Successfully saved checkpoint to {save_path}")
+            # try:
+            #     num_ckpt_to_keep = 10
+            #     if len(list(glob(os.path.join(output_dir, "ckpt*.pth")))) > num_ckpt_to_keep:
+            #         # remove old checkpoints
+            #         for fn in list(sorted(glob(os.path.join(output_dir, "ckpt*.pth"))))[
+            #             :-num_ckpt_to_keep
+            #         ]:
+            #             os.remove(fn)
+            #             logger.info(f"Removed old checkpoint: {fn}")
+            #     agent.save_snapshot(save_path)
+            #     logger.info(f"Successfully saved checkpoint to {save_path}")
                 
-                # Also copy to current working directory for Hydra compatibility
-                cwd_save_path = os.path.join(os.getcwd(), f"ckpt{epoch_ix:05d}.pth")
-                shutil.copy2(save_path, cwd_save_path)
-                logger.info(f"Copied checkpoint to current working directory: {cwd_save_path}")
-            except Exception as e:
-                logger.error(f"Failed to save checkpoint to {save_path}: {str(e)}")
+            #     # Also copy to current working directory for Hydra compatibility
+            #     cwd_save_path = os.path.join(os.getcwd(), f"ckpt{epoch_ix:05d}.pth")
+            #     shutil.copy2(save_path, cwd_save_path)
+            #     logger.info(f"Copied checkpoint to current working directory: {cwd_save_path}")
+            # except Exception as e:
+            #     logger.error(f"Failed to save checkpoint to {save_path}: {str(e)}")
 
-
+            agent.save_snapshot(save_path)
+            logger.info(f"Successfully saved checkpoint to {save_path}")
 if __name__ == "__main__":
     main()
