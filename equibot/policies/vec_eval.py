@@ -38,7 +38,7 @@ def run_eval(
         
         while not done:
             with torch.no_grad():
-                action = agent.get_action(obs)
+                action = agent.act(obs)
             obs, rew, done, info = env.step(action)
             ep_rew += rew
             if vis:
