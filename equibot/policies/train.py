@@ -220,6 +220,9 @@ def main(cfg):
         ):
             save_path = os.path.join(output_dir, f"ckpt{epoch_ix:05d}.pth")
             logger.info(f"Saving checkpoint to {save_path}")
+                    # actually write it:
+            agent.save_snapshot(save_path)
+            logger.info(f"Successfully saved checkpoint to {save_path}")
             # try:
             #     num_ckpt_to_keep = 10
             #     if len(list(glob(os.path.join(output_dir, "ckpt*.pth")))) > num_ckpt_to_keep:
