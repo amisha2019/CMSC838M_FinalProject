@@ -1,101 +1,79 @@
-# PI-EquiBot Codebase Fixes
+# EquiBot Fixes Summary
 
-This document summarizes all the issues fixed in the PI-EquiBot codebase to make it run successfully.
+This document outlines the fixes applied to the EquiBot codebase to address several critical issues that were causing training jobs to fail.
 
-## 1. DDPMScheduler Issues
+## Issues Fixed
 
-### Problem
-`DDPMScheduler` from the `diffusers` library doesn't have a `.to(device)` method, but it was being called in the code:
+### 1. Empty Dataset Path
+**Problem:** The training job expected data files at a specific path that didn't exist, causing an empty dataset error.
 
-```python
-self.noise_scheduler = hydra.utils.instantiate(cfg.model.noise_scheduler).to(device)
-```
+**Fix:** 
+- Modified the run_training.sh script to accept a configurable data path
+- Added checks to verify that the data directory exists before starting training
+- Created a proper directory structure for storing data
 
-### Fix
-- Removed the `.to(device)` call from `equibot_policy.py`
-- Replaced `hydra.utils.instantiate` with direct instantiation of `DDPMScheduler` class
-- Added proper import for `DDPMScheduler`
+### 2. Hard-coded Output Directory
+**Problem:** All jobs wrote to the same hard-coded output directory, causing overwrites.
 
-## 2. Missing Configuration Parameters
+**Fix:**
+- Modified train.py to use a configurable log directory via the `log_dir` parameter
+- Updated all scripts to use unique output directories for each job
+- Ensured that job-specific directories are created before training starts
 
-### Problem
-Several configuration parameters were missing:
-- `training.weight_decay` - used in optimizer initialization
-- `training.ckpt` - used for checkpoint loading
+### 3. Missing Hydra Placeholders
+**Problem:** The base.yaml config contained placeholders marked with `???` that needed to be overridden.
 
-### Fix
-- Added the missing `training.weight_decay` parameter to the training configuration (default: 1e-6)
-- Modified `train.py` to check if `training.ckpt` exists before trying to access it
+**Fix:**
+- Ensured all required parameters are provided in the training scripts:
+  - `env.args.num_points`
+  - `env.args.max_episode_length`
+  - `data.dataset.num_training_steps`
 
-## 3. Configuration Key Mismatch
+### 4. Non-unique Log Directories
+**Problem:** Multiple training jobs could overwrite each other's logs and checkpoints.
 
-### Problem
-Code was trying to access `cfg.train` but the correct key is `cfg.training`:
+**Fix:**
+- Created a directory structure that ensures unique paths for each job: `${LOG_ROOT}/${TASK}/${VARIANT}_seed${SEED}`
+- Added the `submit_jobs.sh` script that uses SLURM job arrays to manage multiple training runs
 
-```python
-if hasattr(cfg.train, 'use_curriculum') and cfg.train.use_curriculum and hasattr(cfg.train, 'curriculum_T'):
-```
+## Running Training Jobs
 
-### Fix
-Changed all instances of `cfg.train` to `cfg.training` for curriculum-related checks.
+Two scripts have been created to simplify running training jobs:
 
-## 4. Normalizer Shape Mismatch
-
-### Problem
-When normalizing actions, there was a shape mismatch causing this error:
-```
-RuntimeError: shape '[1, 1, 14]' is invalid for input of size 4
-```
-
-And another error:
-```
-RuntimeError: The size of tensor a (14) must match the size of tensor b (4) at non-singleton dimension 2
-```
-
-### Fix
-Updated the `normalize` and `unnormalize` methods in the `Normalizer` class to handle tensors with different dimensions:
-
-1. Added a try-except block to catch and handle reshape errors
-2. If input size is smaller than expected, use only the portion of stats that fits the input tensor
-3. **Improved fix:** Properly reshape the sliced tensors to match the input tensor dimensions for broadcasting:
-   ```python
-   # Create proper shape for broadcasting
-   new_target_shape = (1,) * (nd - 1) + (total_dims,)
-   dmin = dmin.reshape(new_target_shape)
-   dmax = dmax.reshape(new_target_shape)
+1. **run_training.sh** - For running a single training job:
+   ```bash
+   bash run_training.sh --task close --variant baseline --seed 0 --data_root /path/to/data --log_root /path/to/logs
    ```
 
-4. This ensures proper broadcasting when performing operations between tensors of different dimensions
+2. **submit_jobs.sh** - For submitting multiple jobs as a SLURM array:
+   ```bash
+   sbatch submit_jobs.sh
+   ```
+   This will submit 9 jobs with different task/variant combinations.
 
-## 5. System Compatibility Issues
+## Data Requirements
 
-### Problem
-Library compatibility issues with `libstdc++.so.6`
-
-### Fix
-Added note to ensure `LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6` is set for all jobs.
-
-## 6. Required Packages
-
-### Problem
-Missing Python packages required for the codebase to run properly.
-
-### Fix
-The following packages need to be installed in the conda environment:
-- `pybullet` - For physics simulation
-- `diffusers` - For diffusion models
-- `hydra-core` - For configuration management
-- `wandb` - For experiment tracking
-- `torch` - For deep learning
-
-Installation command:
-```bash
-conda activate lfd
-pip install pybullet diffusers hydra-core wandb
+Before running training, make sure your data is organized in the following structure:
+```
+/path/to/data/
+├── close_phy/
+│   └── pcs/
+│       └── *.npz files
+├── fold_phy/
+│   └── pcs/
+│       └── *.npz files
+└── pour_phy/
+    └── pcs/
+        └── *.npz files
 ```
 
-## Testing Status
+## Environment Setup
 
-All jobs have been successfully submitted and are waiting in the queue. The fixes should allow the training to proceed without the above errors. 
+Make sure to activate the correct environment before running training:
+```bash
+source /fs/cml-scratch/amishab/miniconda3/etc/profile.d/conda.sh
+conda activate lfd
+export LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6
+```
 
-A validation test script (`test_normalizer_fix.py`) has been created to verify the normalizer fix is working properly, and it passes successfully. 
+These commands are included in the run_training.sh script. 

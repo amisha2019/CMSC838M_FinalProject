@@ -1,6 +1,0 @@
-- prefix=sim_mobile_fold_7dof_production
-- data.dataset.path=/fs/cml-scratch/amishab/data/fold/pcs
-- training.eval_interval=50
-- training.save_interval=50
-- training.vis_interval=100
-- use_wandb=True

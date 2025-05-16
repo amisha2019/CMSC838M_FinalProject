@@ -1,0 +1,48 @@
+[2025-05-16 15:39:02,381][__main__][INFO] - Starting training...
+[2025-05-16 15:39:02,381][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 15:39:02,381][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,381][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,382][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 15:39:02,382][__main__][INFO] - Starting training...
+[2025-05-16 15:39:02,382][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 15:39:02,382][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,382][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,382][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 15:39:02,382][__main__][INFO] - Starting training...
+[2025-05-16 15:39:02,383][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 15:39:02,383][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,383][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,383][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 15:39:02,383][__main__][INFO] - Starting training...
+[2025-05-16 15:39:02,383][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 15:39:02,383][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,383][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 15:39:02,383][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 15:39:02,391][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 15:39:02,392][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 15:39:02,393][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 15:39:02,394][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 15:41:33,258][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 15:41:33,258][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 15:41:33,258][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 15:41:46,691][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-16 15:42:02,699][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:42:02,699][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:42:04,116][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:42:06,754][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:42:06,756][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:42:06,923][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:42:07,123][__main__][INFO] - Starting training from scratch
+[2025-05-16 15:42:07,138][__main__][INFO] - Starting training from scratch
+[2025-05-16 15:42:07,237][__main__][INFO] - Starting training from scratch
+[2025-05-16 15:42:07,479][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:42:10,379][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:42:10,822][__main__][INFO] - Starting training from scratch

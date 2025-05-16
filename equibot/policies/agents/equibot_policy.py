@@ -89,17 +89,181 @@ class EquiBotPolicy(nn.Module):
         self.ema = EMAModel(model=copy.deepcopy(self.nets), power=0.75)
 
         if self.use_torch_compile:
-            self._init_torch_compile()
-        else:
-            # Initialize handles to point to the original modules
-            self.encoder_handle = self.encoder
-            self.noise_pred_net_handle = self.noise_pred_net
-
+            self.compiled = False
+            
+        # Add handle attributes for compatibility with agent code
+        self.noise_pred_net_handle = self.noise_pred_net
+        
     def _init_torch_compile(self):
-        """Initialize compiled versions of modules when torch_compile is enabled."""
-        self.encoder_handle = torch.compile(self.encoder)
-        self.noise_pred_net_handle = torch.compile(self.noise_pred_net)
-        self.compiled = True
+        """Initialize torch.compile if enabled."""
+        if self.use_torch_compile:
+            try:
+                import torch._dynamo as dynamo
+                self.noise_pred_net_handle = torch.compile(self.noise_pred_net)
+                self.compiled = True
+            except Exception as e:
+                print(f"Failed to compile model: {e}")
+                self.compiled = False
+
+    def _convert_state_to_vec(self, state):
+        """Convert state tensor to vector representation for conditioning.
+        
+        Args:
+            state: State tensor of shape [B, T, num_eef, eef_dim]
+                where B is batch size, T is time steps, num_eef is number of end effectors,
+                and eef_dim is the end effector dimension (typically 3 for xyz or 7 for pose)
+                
+        Returns:
+            z_pos: Position vector of shape [B, T, num_eef, 3]
+            z_dir: Direction vector of shape [B, T, num_eef, 3] or None if not using rotation
+            z_scalar: Scalar values (e.g., gripper) of shape [B, T, num_eef] or None if not using gripper
+        """
+        B, T, num_eef, eef_dim = state.shape
+        
+        if eef_dim == 3:
+            # Just xyz position
+            z_pos = state
+            z_dir = None
+            z_scalar = None
+        elif eef_dim == 4:
+            # xyz position + gripper
+            z_pos = state[..., 1:4]  # xyz is typically at indices 1,2,3
+            z_dir = None
+            z_scalar = state[..., 0:1]  # gripper is typically at index 0
+        elif eef_dim == 7:
+            # xyz position + rotation (quaternion) + gripper
+            z_pos = state[..., 1:4]  # xyz is typically at indices 1,2,3
+            z_dir = state[..., 4:7]  # rotation is typically at indices 4,5,6
+            z_scalar = state[..., 0:1]  # gripper is typically at index 0
+        else:
+            raise ValueError(f"Unsupported eef_dim: {eef_dim}")
+        
+        return z_pos, z_dir, z_scalar
+            
+    def _convert_action_to_vec(self, action, batch=None):
+        """Convert action tensor to vector representation for diffusion model.
+        
+        Args:
+            action: Action tensor of shape [B, T, D] where D is the total action dimension
+            batch: Optional batch dictionary with additional information
+            
+        Returns:
+            vec_eef_action: End effector action vector of shape [B, T, num_eef, 3]
+            vec_gripper_action: Gripper action vector of shape [B, T, num_eef] or None if not using gripper
+        """
+        B, T, D = action.shape
+        
+        # Calculate number of end effectors and DOF per end effector
+        if hasattr(self.cfg.env, 'num_eef') and hasattr(self.cfg.env, 'dof'):
+            num_eef = self.cfg.env.num_eef
+            dof = self.cfg.env.dof
+        else:
+            # Default to 1 end effector and try to infer DOF from action dimension
+            num_eef = 1
+            dof = D // num_eef
+            
+        # Check if action size matches expected shape
+        expected_size = B * T * num_eef * dof
+        actual_size = action.numel()
+        
+        if expected_size != actual_size:
+            print(f"Warning: Unexpected action size in _convert_action_to_vec. Expected {expected_size}, got {actual_size}")
+            # Try to adapt to the actual data
+            if actual_size % (B * T * num_eef) == 0:
+                # Calculate the actual dof based on data
+                actual_dof = actual_size // (B * T * num_eef)
+                print(f"Adapting to action dof={actual_dof} instead of configured dof={dof}")
+                dof = actual_dof
+                
+        try:
+            action = action.reshape(B, T, num_eef, dof)
+        except RuntimeError as e:
+            print(f"Error reshaping action: {e}")
+            print(f"Action shape: {action.shape}, trying alternative reshape")
+            # If we can't reshape as expected, handle the special case
+            # For this adaptation, we'll assume a 1D action vector and extract what we need
+            if dof == 3:
+                # Just xyz position
+                # Extract first 3 values per step as position
+                vec_eef_action = action.reshape(B, T, -1)[..., :3].unsqueeze(2)
+                vec_gripper_action = None
+                return vec_eef_action, vec_gripper_action
+            elif dof == 4:
+                # Gripper + xyz
+                # Extract first value as gripper, next 3 as position
+                reshaped = action.reshape(B, T, -1)
+                vec_eef_action = reshaped[..., 1:4].unsqueeze(2)
+                vec_gripper_action = reshaped[..., 0:1].unsqueeze(2)
+                return vec_eef_action, vec_gripper_action
+            else:
+                # Just reshape to expected output shapes
+                vec_eef_action = torch.zeros(B, T, num_eef, 3, device=action.device)
+                vec_gripper_action = torch.zeros(B, T, num_eef, 1, device=action.device)
+                return vec_eef_action, vec_gripper_action
+        
+        if dof == 3:
+            # Just xyz position
+            vec_eef_action = action
+            vec_gripper_action = None
+        elif dof == 4:
+            # xyz position + gripper
+            vec_eef_action = action[..., 1:4]  # xyz is typically at indices 1,2,3
+            vec_gripper_action = action[..., 0:1]  # gripper is typically at index 0
+        elif dof == 7:
+            # xyz position + rotation (quaternion) + gripper
+            vec_eef_action = action[..., 1:4]  # xyz is typically at indices 1,2,3
+            vec_gripper_action = action[..., 0:1]  # gripper is typically at index 0
+        else:
+            # Handle arbitrary dof by assuming first value is gripper and next 3 are xyz
+            # This is a fallback for unexpected dof values
+            print(f"Using fallback handling for unusual dof value: {dof}")
+            if dof > 3:
+                vec_eef_action = action[..., 1:4]  # Assume indices 1,2,3 are xyz
+                vec_gripper_action = action[..., 0:1]  # Assume index 0 is gripper
+            else:
+                vec_eef_action = action  # Use all values as position
+                vec_gripper_action = None
+            
+        return vec_eef_action, vec_gripper_action
+            
+    def _convert_action_to_scalar(self, vec_eef_action, vec_gripper_action=None, batch=None):
+        """Convert vector action representation back to scalar action.
+        
+        Args:
+            vec_eef_action: End effector action vector of shape [B, T, num_eef, 3]
+            vec_gripper_action: Optional gripper action vector of shape [B, T, num_eef, 1]
+            batch: Optional batch dictionary with additional information
+            
+        Returns:
+            action: Action tensor in scalar format
+        """
+        try:
+            if vec_gripper_action is None:
+                # Just position, no gripper
+                return vec_eef_action
+            else:
+                # Position + gripper
+                return torch.cat([vec_gripper_action, vec_eef_action], dim=-1)
+        except RuntimeError as e:
+            print(f"Error in _convert_action_to_scalar: {e}")
+            print(f"vec_eef_action shape: {vec_eef_action.shape}")
+            if vec_gripper_action is not None:
+                print(f"vec_gripper_action shape: {vec_gripper_action.shape}")
+            
+            # Try to reshape tensors to be compatible
+            B = vec_eef_action.shape[0]
+            T = vec_eef_action.shape[1]
+            
+            if len(vec_eef_action.shape) == 4:  # [B, T, num_eef, 3]
+                flattened_eef = vec_eef_action.reshape(B, T, -1)
+                if vec_gripper_action is not None:
+                    flattened_gripper = vec_gripper_action.reshape(B, T, -1)
+                    return torch.cat([flattened_gripper, flattened_eef], dim=-1)
+                else:
+                    return flattened_eef
+            else:
+                # In case shape is unexpected, just return vec_eef_action
+                return vec_eef_action
 
     def forward(self, obs, ema=True, physics_vec=None):
         """Forward pass through the policy.
@@ -122,12 +286,12 @@ class EquiBotPolicy(nn.Module):
         if O > 1:
             # multi-observation
             pc = obs["pc"].reshape(-1, P, 3)  # [B*O, P, 3]
-            z_local = self.encoder_handle(pc)  # [B*O, 3*hidden_dim]
+            z_local = self.nets["encoder"](pc)  # [B*O, 3*hidden_dim]
             z_local = z_local.reshape(B, O, -1)  # [B, O, 3*hidden_dim]
             z = z_local[:, -1].reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
         else:
             pc = obs["pc"].reshape(-1, P, 3)  # [B, P, 3]
-            z = self.encoder_handle(pc)  # [B, 3*hidden_dim]
+            z = self.nets["encoder"](pc)  # [B, 3*hidden_dim]
             z = z.reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
 
         if ema:
@@ -181,7 +345,7 @@ class EquiBotPolicy(nn.Module):
                     torch.cat([q_k_flat, z_flat], dim=-1), t=torch.zeros(B, device=device)
                 )
             else:
-                noise_hat = self.noise_pred_net_handle(
+                noise_hat = self.noise_pred_net(
                     torch.cat([q_k_flat, z_flat], dim=-1), t=torch.zeros(B, device=device)
                 )
                 
@@ -199,12 +363,12 @@ class EquiBotPolicy(nn.Module):
         if O > 1:
             # multi-observation
             pc = obs["pc"].reshape(-1, P, 3)  # [B*O, P, 3]
-            z_local = self.encoder_handle(pc)  # [B*O, 3*hidden_dim]
+            z_local = self.nets["encoder"](pc)  # [B*O, 3*hidden_dim]
             z_local = z_local.reshape(B, O, -1)  # [B, O, 3*hidden_dim]
             z = z_local[:, -1].reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
         else:
             pc = obs["pc"].reshape(-1, P, 3)  # [B, P, 3]
-            z = self.encoder_handle(pc)  # [B, 3*hidden_dim]
+            z = self.nets["encoder"](pc)  # [B, 3*hidden_dim]
             z = z.reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
 
         if ema:
@@ -260,7 +424,7 @@ class EquiBotPolicy(nn.Module):
                         model_input = torch.cat([x_t, context], dim=-1)
                     else:
                         model_input = x_t
-                    return self.noise_pred_net_handle(model_input, t=t)
+                    return self.noise_pred_net(model_input, t=t)
 
             # Use the scheduler's native sampling
             self.noise_scheduler.set_timesteps(1000, device=device)

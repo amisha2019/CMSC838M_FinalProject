@@ -5,6 +5,7 @@ Test script to verify the training job can run for a few iterations without erro
 This is a simple script that sets up a minimal training environment and runs the main training function.
 """
 
+
 import os
 import sys
 import torch
@@ -17,6 +18,7 @@ def create_test_config():
         'prefix': 'test_training',
         'device': 'cuda' if torch.cuda.is_available() else 'cpu',
         'use_wandb': False,
+        'log_dir': './test_logs',  # Add configurable log directory
         'data': {
             'dataset': {
                 'path': '/fs/nexus-projects/Sketch_REBEL/equibot/data/close_phy/pcs',

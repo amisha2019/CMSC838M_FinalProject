@@ -1,0 +1,48 @@
+[2025-05-16 14:59:04,354][__main__][INFO] - Starting training...
+[2025-05-16 14:59:04,355][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 14:59:04,355][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,355][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,355][__main__][INFO] - Starting training...
+[2025-05-16 14:59:04,356][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 14:59:04,356][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 14:59:04,356][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,356][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,357][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 14:59:04,356][__main__][INFO] - Starting training...
+[2025-05-16 14:59:04,357][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 14:59:04,357][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,357][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,357][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 14:59:04,357][__main__][INFO] - Starting training...
+[2025-05-16 14:59:04,358][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 14:59:04,358][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,358][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 14:59:04,358][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 14:59:04,370][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 14:59:04,370][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 14:59:04,371][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 14:59:04,372][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 15:01:41,344][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 15:01:41,344][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 15:01:41,344][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 15:01:56,360][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-16 15:02:16,348][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:02:19,215][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:02:19,223][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:02:19,226][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 15:02:24,807][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:02:24,847][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:02:24,850][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:02:24,851][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 15:02:25,452][__main__][INFO] - Starting training from scratch
+[2025-05-16 15:02:25,458][__main__][INFO] - Starting training from scratch
+[2025-05-16 15:02:25,500][__main__][INFO] - Starting training from scratch
+[2025-05-16 15:02:25,640][__main__][INFO] - Starting training from scratch

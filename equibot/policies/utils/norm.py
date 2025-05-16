@@ -33,106 +33,70 @@ class Normalizer(object):
             }
 
     def normalize(self, data):
-        """Normalize data using stored statistics.
-        
-        Args:
-            data: Input tensor to normalize
-            
-        Returns:
-            Normalized tensor with same shape as input
-        """
-        # Get the shape of the input data
         nd = len(data.shape)
-        data_size = data.shape[-1]
-        
-        # Make sure we're only using relevant stats
-        min_vals = self.stats["min"]
-        max_vals = self.stats["max"]
-        
-        # Handle dimension mismatch by truncating or padding if needed
-        if data_size < min_vals.shape[0]:
-            min_vals = min_vals[:data_size]
-            max_vals = max_vals[:data_size]
-        
-        # Create target shape for broadcasting
-        target_shape = tuple([1] * (nd - 1) + [data_size])
-        
-        # Safe reshape
-        min_tensor = min_vals.clone().detach()
-        max_tensor = max_vals.clone().detach()
-        
-        # Ensure min_tensor and max_tensor have the right size before reshaping
-        if min_tensor.numel() != data_size:
-            print(f"Warning: Stats size {min_tensor.numel()} != data size {data_size}. Adjusting...")
-            if min_tensor.numel() > data_size:
-                min_tensor = min_tensor[:data_size]
-                max_tensor = max_tensor[:data_size]
+        target_shape = (1,) * (nd - 1) + (data.shape[-1],)
+        try:
+            dmin = self.stats["min"].reshape(target_shape)
+            dmax = self.stats["max"].reshape(target_shape)
+            return (data - dmin) / (dmax - dmin + 1e-12)
+        except RuntimeError as e:
+            # Handle shape mismatch by using a different approach
+            print(f"Warning: Reshape failed in normalize. Applying adaptive normalization. Error: {e}")
+            data_last_dim = data.shape[-1]
+
+            dmin_for_op = self.stats["min"][:data_last_dim]
+            dmax_for_op = self.stats["max"][:data_last_dim]
+
+            op_dim = dmin_for_op.shape[-1]
+
+            op_stats_reshaped_target = (1,) * (nd - 1) + (op_dim,)
+            dmin_reshaped = dmin_for_op.reshape(op_stats_reshaped_target)
+            dmax_reshaped = dmax_for_op.reshape(op_stats_reshaped_target)
+
+            if op_dim < data_last_dim:
+                # Stats are effectively smaller than data. Normalize only the corresponding slice of data.
+                data_slice_to_norm = data[..., :op_dim]
+                normalized_data_slice = (data_slice_to_norm - dmin_reshaped) / (dmax_reshaped - dmin_reshaped + 1e-12)
+                
+                result = data.clone() 
+                result[..., :op_dim] = normalized_data_slice
+                return result
             else:
-                # Padding case - less likely but handle it
-                padded_min = torch.zeros(data_size, device=min_tensor.device)
-                padded_max = torch.ones(data_size, device=max_tensor.device)
-                padded_min[:min_tensor.numel()] = min_tensor
-                padded_max[:max_tensor.numel()] = max_tensor
-                min_tensor = padded_min
-                max_tensor = padded_max
-        
-        # Now reshape for broadcasting
-        min_tensor = min_tensor.reshape(target_shape)
-        max_tensor = max_tensor.reshape(target_shape)
-        
-        # Normalize using broadcasting
-        return (data - min_tensor) / (max_tensor - min_tensor + 1e-12)
+                # op_dim == data_last_dim. Normalize the whole 'data' tensor.
+                return (data - dmin_reshaped) / (dmax_reshaped - dmin_reshaped + 1e-12)
 
     def unnormalize(self, data):
-        """Unnormalize data using stored statistics.
-        
-        Args:
-            data: Input tensor to unnormalize
-            
-        Returns:
-            Unnormalized tensor with same shape as input
-        """
-        # Get the shape of the input data
         nd = len(data.shape)
-        data_size = data.shape[-1]
-        
-        # Make sure we're only using relevant stats
-        min_vals = self.stats["min"]
-        max_vals = self.stats["max"]
-        
-        # Handle dimension mismatch by truncating or padding if needed
-        if data_size < min_vals.shape[0]:
-            min_vals = min_vals[:data_size]
-            max_vals = max_vals[:data_size]
-        
-        # Create target shape for broadcasting
-        target_shape = tuple([1] * (nd - 1) + [data_size])
-        
-        # Safe reshape
-        min_tensor = min_vals.clone().detach()
-        max_tensor = max_vals.clone().detach()
-        
-        # Ensure min_tensor and max_tensor have the right size before reshaping
-        if min_tensor.numel() != data_size:
-            print(f"Warning: Stats size {min_tensor.numel()} != data size {data_size}. Adjusting...")
-            if min_tensor.numel() > data_size:
-                min_tensor = min_tensor[:data_size]
-                max_tensor = max_tensor[:data_size]
+        target_shape = (1,) * (nd - 1) + (data.shape[-1],)
+        try:
+            dmin = self.stats["min"].reshape(target_shape)
+            dmax = self.stats["max"].reshape(target_shape)
+            return data * (dmax - dmin) + dmin
+        except RuntimeError as e:
+            # Handle shape mismatch by using a different approach
+            print(f"Warning: Reshape failed in unnormalize. Applying adaptive normalization. Error: {e}")
+            data_last_dim = data.shape[-1]
+
+            dmin_for_op = self.stats["min"][:data_last_dim]
+            dmax_for_op = self.stats["max"][:data_last_dim]
+
+            op_dim = dmin_for_op.shape[-1]
+
+            op_stats_reshaped_target = (1,) * (nd - 1) + (op_dim,)
+            dmin_reshaped = dmin_for_op.reshape(op_stats_reshaped_target)
+            dmax_reshaped = dmax_for_op.reshape(op_stats_reshaped_target)
+
+            if op_dim < data_last_dim:
+                # Stats are effectively smaller than data. Unnormalize only the corresponding slice of data.
+                data_slice_to_unnorm = data[..., :op_dim]
+                unnormalized_data_slice = data_slice_to_unnorm * (dmax_reshaped - dmin_reshaped) + dmin_reshaped
+                
+                result = data.clone() 
+                result[..., :op_dim] = unnormalized_data_slice
+                return result
             else:
-                # Padding case - less likely but handle it
-                padded_min = torch.zeros(data_size, device=min_tensor.device)
-                padded_max = torch.ones(data_size, device=max_tensor.device)
-                padded_min[:min_tensor.numel()] = min_tensor
-                padded_max[:max_tensor.numel()] = max_tensor
-                min_tensor = padded_min
-                max_tensor = padded_max
-        
-        # Now reshape for broadcasting
-        min_tensor = min_tensor.reshape(target_shape)
-        max_tensor = max_tensor.reshape(target_shape)
-        
-        # Unnormalize using broadcasting
-        return data * (max_tensor - min_tensor) + min_tensor
+                # op_dim == data_last_dim. Unnormalize the whole 'data' tensor.
+                return data * (dmax_reshaped - dmin_reshaped) + dmin_reshaped
 
     def state_dict(self):
         return self.stats

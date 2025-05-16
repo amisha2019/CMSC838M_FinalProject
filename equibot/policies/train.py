@@ -25,8 +25,11 @@ def main(cfg):
     assert cfg.mode == "train"
     np.random.seed(cfg.seed)
     
-    # Fix Hydra output directory
-    output_dir = "/fs/nexus-projects/Sketch_VLM_RL/equibit"
+    # Fix Hydra output directory - use configurable path instead of hardcoded one
+    if hasattr(cfg, 'log_dir'):
+        output_dir = os.path.abspath(cfg.log_dir)
+    else:
+        output_dir = "/fs/nexus-projects/Sketch_VLM_RL/equibit"  # fallback to original path
     os.makedirs(output_dir, exist_ok=True)
     
     # Get Hydra's current output directory

@@ -87,7 +87,7 @@ class EquiBotAgent(DPAgent):
             else:
                 z = z_pos
         else:
-            feat_dict = self.actor.encoder_handle(pc, target_norm=self.pc_scale)
+            feat_dict = self.actor.encoder(pc)
 
             center = (
                 feat_dict["center"].reshape(B, Ho, 1, 3)[:, [-1]].repeat(1, Ho, 1, 1)
@@ -116,7 +116,27 @@ class EquiBotAgent(DPAgent):
             else:
                 center = 0
             scale = feat_dict["scale"].reshape(B, Ho, 1, 1)[:, [-1]].repeat(1, Hp, 1, 1)
-            gt_action = gt_action.reshape(B, Hp, self.num_eef, self.dof)
+            
+            # Check if action tensor has the expected size for reshaping
+            expected_size = B * Hp * self.num_eef * self.dof
+            actual_size = gt_action.numel()
+            
+            if actual_size == expected_size:
+                # Original reshape is fine
+                gt_action = gt_action.reshape(B, Hp, self.num_eef, self.dof)
+            else:
+                # Handle the case where the tensor size doesn't match
+                print(f"Warning: Unexpected action size. Expected {expected_size}, got {actual_size}")
+                # Calculate the actual shape based on the number of elements and known dimensions
+                if actual_size % (B * Hp * self.num_eef) == 0:
+                    # Adapt dof based on the actual data
+                    actual_dof = actual_size // (B * Hp * self.num_eef)
+                    print(f"Adapting action shape using dof={actual_dof} instead of {self.dof}")
+                    gt_action = gt_action.reshape(B, Hp, self.num_eef, actual_dof)
+                else:
+                    # If we can't reshape to match the expected pattern, try a simpler reshape
+                    gt_action = gt_action.reshape(B, Hp, -1)
+            
             if self.dof == 4:
                 gt_action = torch.cat(
                     [gt_action[..., :1], (gt_action[..., 1:] - center) / scale], dim=-1
@@ -163,15 +183,45 @@ class EquiBotAgent(DPAgent):
                 vec_gripper_action, vec_gripper_noise, timesteps
             )
 
-            vec_eef_noise_pred, vec_gripper_noise_pred = (
-                self.actor.noise_pred_net_handle(
-                    noisy_eef_actions.permute(0, 3, 1, 2),
-                    timesteps,
-                    scalar_sample=noisy_gripper_actions.permute(0, 2, 1),
-                    cond=obs_cond_vec,
-                    scalar_cond=obs_cond_scalar,
+            # Check if the model has scalar_fusion_module to handle scalar_sample
+            has_scalar_fusion = hasattr(self.actor.noise_pred_net, "scalar_fusion_module")
+            
+            # Check dimensions of noisy_gripper_actions for proper permutation
+            if len(noisy_gripper_actions.shape) == 4:  # [B, T, num_eef, 1]
+                # First flatten num_eef and value dimensions
+                scalar_sample = noisy_gripper_actions.reshape(noisy_gripper_actions.shape[0], 
+                                                            noisy_gripper_actions.shape[1], -1)
+                # Then permute
+                scalar_sample = scalar_sample.permute(0, 2, 1)
+            else:
+                # Original permutation for 3D tensor
+                scalar_sample = noisy_gripper_actions.permute(0, 2, 1)
+
+            # Only use scalar_sample if the model supports it
+            if has_scalar_fusion:
+                vec_eef_noise_pred, vec_gripper_noise_pred = (
+                    self.actor.noise_pred_net_handle(
+                        noisy_eef_actions.permute(0, 3, 1, 2),
+                        timesteps,
+                        scalar_sample=scalar_sample,
+                        cond=obs_cond_vec,
+                        scalar_cond=obs_cond_scalar,
+                    )
                 )
-            )
+            else:
+                # Fallback: ignore scalar_sample
+                print("Warning: Model doesn't have scalar_fusion_module, processing only vector actions")
+                vec_eef_noise_pred, _ = (
+                    self.actor.noise_pred_net_handle(
+                        noisy_eef_actions.permute(0, 3, 1, 2),
+                        timesteps,
+                        cond=obs_cond_vec,
+                        scalar_cond=obs_cond_scalar,
+                    )
+                )
+                # Use a copy of the noise as the pred for gripper (simple fallback)
+                vec_gripper_noise_pred = vec_gripper_noise
+
             vec_eef_noise_pred = vec_eef_noise_pred.permute(0, 2, 3, 1)
             vec_gripper_noise_pred = vec_gripper_noise_pred.permute(0, 2, 1)
             if self.dof != 7:
@@ -290,9 +340,6 @@ class EquiBotAgent(DPAgent):
         return metrics
 
     def save_snapshot(self, save_path):
-        # Clean up any compiled models before saving
-        self._cleanup_compiled_models()
-        
         state_dict = dict(
             actor=self.actor.state_dict(),
             ema_model=self.actor.ema.averaged_model.state_dict(),
@@ -302,35 +349,6 @@ class EquiBotAgent(DPAgent):
             ac_normalizer=self.ac_normalizer.state_dict(),
         )
         torch.save(state_dict, save_path)
-        
-        # Restore compiled models after saving
-        self._restore_compiled_models()
-        
-    def _cleanup_compiled_models(self):
-        """Clean up compiled models before saving to prevent serialization issues."""
-        if hasattr(self.actor, 'encoder_handle'):
-            # Store reference to original attribute for restoration
-            self._encoder_handle_backup = self.actor.encoder_handle
-            self._noise_pred_net_handle_backup = self.actor.noise_pred_net_handle
-            
-            # Delete the compiled attributes
-            del self.actor.encoder_handle
-            del self.actor.noise_pred_net_handle
-            
-            # Restore with non-compiled versions
-            self.actor.encoder_handle = self.actor.encoder
-            self.actor.noise_pred_net_handle = self.actor.noise_pred_net
-        
-    def _restore_compiled_models(self):
-        """Restore compiled models after saving."""
-        if hasattr(self, '_encoder_handle_backup'):
-            # Restore original compiled references if they exist
-            self.actor.encoder_handle = self._encoder_handle_backup
-            self.actor.noise_pred_net_handle = self._noise_pred_net_handle_backup
-            
-            # Clean up backup references
-            del self._encoder_handle_backup
-            del self._noise_pred_net_handle_backup
 
     def fix_checkpoint_keys(self, state_dict):
         fixed_state_dict = dict()

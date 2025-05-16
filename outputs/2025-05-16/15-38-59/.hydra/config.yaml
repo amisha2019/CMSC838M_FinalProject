@@ -1,0 +1,211 @@
+evaluation:
+  ? ''
+  : ? ''
+    : ? ''
+      : prefix: default
+        device: cuda
+        mode: train
+        log_dir: logs2/${mode}
+        eval_data_path: null
+        use_wandb: true
+        seed: 0
+        agent:
+          agent_name: dp
+        env:
+          env_class: ???
+          num_eef: 2
+          dof: 7
+          eef_dim: 13
+          vectorize: false
+          args:
+            num_eef: ${env.num_eef}
+            dof: ${env.dof}
+            seed: ${seed}
+            obs_mode: pc
+            ac_mode: rel
+            max_episode_length: ???
+            num_points: ${data.dataset.num_points}
+            randomize_rotation: false
+            randomize_scale: false
+            scale_low: 1.0
+            scale_high: 1.0
+            scale_aspect_limit: 100.0
+            uniform_scaling: false
+        data:
+          dataset_class: base_dataset
+          dataset:
+            num_training_steps: ???
+            path: null
+            num_points: 1024
+            num_augment: 0
+            same_aug_per_sample: true
+            aug_keep_original: true
+            aug_scale_low: 0.5
+            aug_scale_high: 1.5
+            aug_scale_aspect_limit: 1.0
+            aug_scale_rot: -1
+            aug_scale_pos: 0.1
+            aug_zero_z_offset: false
+            aug_center:
+            - 0.0
+            - 0.0
+            - 0.0
+            shuffle_pc: true
+            num_workers: 8
+            dof: ${env.dof}
+            num_eef: ${env.num_eef}
+            eef_dim: ${env.eef_dim}
+            obs_horizon: ${model.obs_horizon}
+            pred_horizon: ${model.pred_horizon}
+            reduce_horizon_dim: false
+            min_demo_length: 15
+        model:
+          hidden_dim: 32
+          physics_embed_dim: 4
+          use_physics_embed: true
+          noise_scheduler:
+            _target_: diffusers.schedulers.scheduling_ddpm.DDPMScheduler
+            num_train_timesteps: 100
+            beta_schedule: squaredcos_cap_v2
+            clip_sample: true
+            prediction_type: epsilon
+          obs_horizon: 2
+          ac_horizon: 8
+          pred_horizon: 16
+          encoder:
+            c_dim: ${model.hidden_dim}
+            backbone_type: vn_pointnet
+            backbone_args:
+              h_dim: ${model.hidden_dim}
+              c_dim: ${model.encoder.c_dim}
+              num_layers: 4
+              knn: 8
+          obs_mode: ${env.args.obs_mode}
+          ac_mode: ${env.args.ac_mode}
+          use_torch_compile: false
+        training:
+          batch_size: 32
+          num_epochs: 2000
+          lr: 3.0e-05
+          weight_decay: 1.0e-06
+          num_eval_episodes: 10
+          eval_interval: 1000000
+          save_interval: 50
+          vis_interval: 100
+          ckpt: null
+        eval:
+          last_ckpt: 1999
+          num_ckpts_to_eval: 5
+        hydra:
+          run:
+            dir: ${log_dir}/${prefix}
+        wandb:
+          entity: amishab
+          project: equibot
+  prefix: vanilla_equibot
+  device: cuda
+  mode: train
+  log_dir: logs2/${mode}
+  eval_data_path: null
+  use_wandb: true
+  seed: 0
+  model:
+    use_physics_embed: false
+    physics_embed_dim: 0
+  loss:
+    lambda_phys: 0.0
+  data:
+    dataset:
+      mixup_prob: 0.0
+  train:
+    use_curriculum: false
+  eval:
+    use_test_time_adaptation: false
+mode: train
+prefix: vanilla_equibot_fold_seed2
+data:
+  dataset:
+    path: /fs/nexus-projects/Sketch_REBEL/equibot/data/fold_phy/pcs
+    dof: 4
+    num_eef: 1
+    eef_dim: 3
+    num_training_steps: 500
+    num_points: 1024
+    num_augment: 0
+    same_aug_per_sample: true
+    aug_keep_original: true
+    aug_scale_low: 0.5
+    aug_scale_high: 1.5
+    aug_scale_aspect_limit: 1.0
+    aug_scale_rot: -1
+    aug_scale_pos: 0.1
+    aug_zero_z_offset: false
+    aug_center:
+    - 0.0
+    - 0.0
+    - 0.0
+    shuffle_pc: true
+    num_workers: 8
+    reduce_horizon_dim: true
+    min_demo_length: 16
+    obs_horizon: 2
+    pred_horizon: 16
+device: cuda
+use_wandb: true
+wandb:
+  project: equibot_evaluation
+  entity: amishab
+agent:
+  agent_name: equibot
+env:
+  env_class: fold
+  args:
+    task_name: fold
+    max_episode_length: 100
+    num_eef: 1
+    dof: 4
+    seed: 2
+    randomize_scale: true
+    randomize_rotation: true
+    uniform_scaling: true
+    ac_noise: 0.0
+    vis: false
+    freq: 5
+    scale_low: 0.8
+    scale_high: 1.2
+    scale_aspect_limit: 1.3
+  dof: 4
+  num_eef: 1
+  eef_dim: 3
+model:
+  obs_horizon: 2
+  ac_horizon: 8
+  pred_horizon: 16
+  obs_mode: pc
+  ac_mode: diffusion
+  hidden_dim: 256
+  encoder:
+    c_dim: 256
+    backbone_type: vn_pointnet
+    backbone_args:
+      num_layers: 4
+      knn: 8
+  use_torch_compile: false
+  noise_scheduler:
+    _target_: diffusers.schedulers.scheduling_ddpm.DDPMScheduler
+    num_train_timesteps: 100
+    beta_schedule: squaredcos_cap_v2
+    clip_sample: true
+    prediction_type: epsilon
+  use_physics_embed: true
+  physics_embed_dim: 4
+seed: 2
+training:
+  num_epochs: 500
+  batch_size: 32
+  lr: 3.0e-05
+  weight_decay: 1.0e-06
+  save_interval: 50
+  vis_interval: 100
+  eval_interval: 50
+  num_eval_episodes: 5
