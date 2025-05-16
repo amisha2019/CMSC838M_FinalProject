@@ -1,0 +1,228 @@
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
+  launcher:
+    _target_: hydra._internal.core_plugins.basic_launcher.BasicLauncher
+  sweeper:
+    _target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+    max_batch_size: null
+    params: null
+  help:
+    app_name: ${hydra.job.name}
+    header: '${hydra.help.app_name} is powered by Hydra.
+
+      '
+    footer: 'Powered by Hydra (https://hydra.cc)
+
+      Use --hydra-help to view Hydra specific help
+
+      '
+    template: '${hydra.help.header}
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (group=option)
+
+
+      $APP_CONFIG_GROUPS
+
+
+      == Config ==
+
+      Override anything in the config (foo.bar=value)
+
+
+      $CONFIG
+
+
+      ${hydra.help.footer}
+
+      '
+  hydra_help:
+    template: 'Hydra (${hydra.runtime.version})
+
+      See https://hydra.cc for more info.
+
+
+      == Flags ==
+
+      $FLAGS_HELP
+
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (For example, append hydra/job_logging=disabled
+      to command line)
+
+
+      $HYDRA_CONFIG_GROUPS
+
+
+      Use ''--cfg hydra'' to Show the Hydra config.
+
+      '
+    hydra_help: ???
+  hydra_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][HYDRA] %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+    root:
+      level: INFO
+      handlers:
+      - console
+    loggers:
+      logging_example:
+        level: DEBUG
+    disable_existing_loggers: false
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        filename: ${hydra.runtime.output_dir}/${hydra.job.name}.log
+    root:
+      level: INFO
+      handlers:
+      - console
+      - file
+    disable_existing_loggers: false
+  env: {}
+  mode: RUN
+  searchpath: []
+  callbacks: {}
+  output_subdir: .hydra
+  overrides:
+    hydra:
+    - hydra.mode=RUN
+    task:
+    - +mode=train
+    - +prefix=pi_equibot_mixup_drop_fold_seed0
+    - +data.dataset.path=/fs/nexus-projects/Sketch_REBEL/equibot/data/fold_phy/pcs
+    - +data.dataset.dof=4
+    - +data.dataset.num_eef=1
+    - +data.dataset.eef_dim=3
+    - +data.dataset.num_training_steps=500
+    - +data.dataset.num_points=1024
+    - +data.dataset.num_augment=0
+    - +data.dataset.same_aug_per_sample=true
+    - +data.dataset.aug_keep_original=true
+    - +data.dataset.aug_scale_low=0.5
+    - +data.dataset.aug_scale_high=1.5
+    - +data.dataset.aug_scale_aspect_limit=1.0
+    - +data.dataset.aug_scale_rot=-1
+    - +data.dataset.aug_scale_pos=0.1
+    - +data.dataset.aug_zero_z_offset=false
+    - +data.dataset.aug_center=[0.0,0.0,0.0]
+    - +data.dataset.shuffle_pc=true
+    - +data.dataset.num_workers=8
+    - +data.dataset.reduce_horizon_dim=true
+    - +data.dataset.min_demo_length=16
+    - +data.dataset.obs_horizon=2
+    - +data.dataset.pred_horizon=16
+    - +device=cuda
+    - +use_wandb=true
+    - +wandb.project=equibot_evaluation
+    - +wandb.entity=amishab
+    - +agent.agent_name=equibot
+    - +env.env_class=fold
+    - +env.args.task_name=fold
+    - +env.args.max_episode_length=100
+    - +env.args.num_eef=1
+    - +env.args.dof=4
+    - +env.args.seed=0
+    - +env.args.randomize_scale=true
+    - +env.args.randomize_rotation=true
+    - +env.args.uniform_scaling=true
+    - +env.args.ac_noise=0.0
+    - +env.args.vis=false
+    - +env.args.freq=5
+    - +env.args.scale_low=0.8
+    - +env.args.scale_high=1.2
+    - +env.args.scale_aspect_limit=1.3
+    - +env.dof=4
+    - +env.num_eef=1
+    - +env.eef_dim=3
+    - +model.obs_horizon=2
+    - +model.ac_horizon=8
+    - +model.pred_horizon=16
+    - +model.obs_mode=pc
+    - +model.ac_mode=diffusion
+    - +model.hidden_dim=256
+    - +model.encoder.c_dim=256
+    - +model.encoder.backbone_type=vn_pointnet
+    - +model.encoder.backbone_args.num_layers=4
+    - +model.encoder.backbone_args.knn=8
+    - +model.use_torch_compile=false
+    - +model.noise_scheduler._target_=diffusers.schedulers.scheduling_ddpm.DDPMScheduler
+    - +model.noise_scheduler.num_train_timesteps=100
+    - +model.noise_scheduler.beta_schedule=squaredcos_cap_v2
+    - +model.noise_scheduler.clip_sample=true
+    - +model.noise_scheduler.prediction_type=epsilon
+    - +model.use_physics_embed=true
+    - +model.physics_embed_dim=4
+    - +seed=0
+    - +training.num_epochs=500
+    - +training.batch_size=32
+    - +training.lr=3e-5
+    - +training.weight_decay=1e-6
+    - +training.save_interval=50
+    - +training.vis_interval=100
+    - +training.eval_interval=50
+    - +training.num_eval_episodes=5
+  job:
+    name: train
+    chdir: null
+    override_dirname: +agent.agent_name=equibot,+data.dataset.aug_center=[0.0,0.0,0.0],+data.dataset.aug_keep_original=true,+data.dataset.aug_scale_aspect_limit=1.0,+data.dataset.aug_scale_high=1.5,+data.dataset.aug_scale_low=0.5,+data.dataset.aug_scale_pos=0.1,+data.dataset.aug_scale_rot=-1,+data.dataset.aug_zero_z_offset=false,+data.dataset.dof=4,+data.dataset.eef_dim=3,+data.dataset.min_demo_length=16,+data.dataset.num_augment=0,+data.dataset.num_eef=1,+data.dataset.num_points=1024,+data.dataset.num_training_steps=500,+data.dataset.num_workers=8,+data.dataset.obs_horizon=2,+data.dataset.path=/fs/nexus-projects/Sketch_REBEL/equibot/data/fold_phy/pcs,+data.dataset.pred_horizon=16,+data.dataset.reduce_horizon_dim=true,+data.dataset.same_aug_per_sample=true,+data.dataset.shuffle_pc=true,+device=cuda,+env.args.ac_noise=0.0,+env.args.dof=4,+env.args.freq=5,+env.args.max_episode_length=100,+env.args.num_eef=1,+env.args.randomize_rotation=true,+env.args.randomize_scale=true,+env.args.scale_aspect_limit=1.3,+env.args.scale_high=1.2,+env.args.scale_low=0.8,+env.args.seed=0,+env.args.task_name=fold,+env.args.uniform_scaling=true,+env.args.vis=false,+env.dof=4,+env.eef_dim=3,+env.env_class=fold,+env.num_eef=1,+mode=train,+model.ac_horizon=8,+model.ac_mode=diffusion,+model.encoder.backbone_args.knn=8,+model.encoder.backbone_args.num_layers=4,+model.encoder.backbone_type=vn_pointnet,+model.encoder.c_dim=256,+model.hidden_dim=256,+model.noise_scheduler._target_=diffusers.schedulers.scheduling_ddpm.DDPMScheduler,+model.noise_scheduler.beta_schedule=squaredcos_cap_v2,+model.noise_scheduler.clip_sample=true,+model.noise_scheduler.num_train_timesteps=100,+model.noise_scheduler.prediction_type=epsilon,+model.obs_horizon=2,+model.obs_mode=pc,+model.physics_embed_dim=4,+model.pred_horizon=16,+model.use_physics_embed=true,+model.use_torch_compile=false,+prefix=pi_equibot_mixup_drop_fold_seed0,+seed=0,+training.batch_size=32,+training.eval_interval=50,+training.lr=3e-5,+training.num_epochs=500,+training.num_eval_episodes=5,+training.save_interval=50,+training.vis_interval=100,+training.weight_decay=1e-6,+use_wandb=true,+wandb.entity=amishab,+wandb.project=equibot_evaluation
+    id: ???
+    num: ???
+    config_name: evaluation/variant_D
+    env_set: {}
+    env_copy: []
+    config:
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+  runtime:
+    version: 1.3.2
+    version_base: '1.3'
+    cwd: /fs/cml-scratch/amishab/equibot
+    config_sources:
+    - path: hydra.conf
+      schema: pkg
+      provider: hydra
+    - path: /fs/cml-scratch/amishab/equibot/equibot/policies/configs
+      schema: file
+      provider: main
+    - path: ''
+      schema: structured
+      provider: schema
+    output_dir: /fs/cml-scratch/amishab/equibot/outputs/2025-05-16/11-01-57
+    choices:
+      hydra/env: default
+      hydra/callbacks: null
+      hydra/job_logging: default
+      hydra/hydra_logging: default
+      hydra/hydra_help: default
+      hydra/help: default
+      hydra/sweeper: basic
+      hydra/launcher: basic
+      hydra/output: default
+  verbose: false

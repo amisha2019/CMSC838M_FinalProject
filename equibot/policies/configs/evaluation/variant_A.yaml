@@ -1,0 +1,35 @@
+# Variant A: Vanilla EquiBot
+prefix: vanilla_equibot
+device: cuda
+mode: train
+log_dir: logs2/${mode}
+eval_data_path: null
+use_wandb: true
+seed: 0
+
+# Include all defaults from base.yaml
+defaults:
+  - ../base
+
+# Vanilla EquiBot configuration
+model:
+  # Disable physics embedding
+  use_physics_embed: false
+  physics_embed_dim: 0  # Not used
+
+# No physics supervision loss
+loss:
+  lambda_phys: 0.0     # Disabled
+
+# No MixUp augmentation
+data:
+  dataset:
+    mixup_prob: 0.0    # Disabled
+
+# No curriculum learning
+train:
+  use_curriculum: false
+
+# No test-time adaptation during evaluation
+eval:
+  use_test_time_adaptation: false 

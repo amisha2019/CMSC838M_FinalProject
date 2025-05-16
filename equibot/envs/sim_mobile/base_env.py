@@ -34,6 +34,14 @@ class BaseEnv(object):
     SIM_GRAVITY = -9.8
     SIM_ARM_QPOS_ERR_THRESH = 0.001  # sim movement error threshold for arms
 
+    # Standard physics parameter ranges
+    DEFAULT_PHYSICS_RANGE = {
+        "mass":        (0.4, 3.0),
+        "friction":    (0.1, 1.2),
+        "stiffness":   (100.0, 300.0),
+        "damping":     (0.5, 2.0),
+    }
+
     def __init__(self, args, rng=None, rng_act=None):
         self.args = args
         self.num_eef = args.num_eef
@@ -340,7 +348,7 @@ class BaseEnv(object):
     def name(self):
         return "base"
 
-    def reset(self, dummy_obs=False):
+    def reset(self, sample_physics=True, dummy_obs=False, **kwargs):
         start = time.time()
         if self.debug:
             print(f"[base env] start of reset")
@@ -349,6 +357,14 @@ class BaseEnv(object):
         self._frames = []
         self._episode_reward = 0.0
         self._ac_noise_multiplier = self.rng.rand()
+        
+        # Handle physics sampling
+        if sample_physics:
+            self.physics_params = self.sample_physics()
+            self.apply_physics_params(self.physics_params)
+        else:
+            assert hasattr(self, "physics_params"), "physics_params missing"
+        
         self._randomize_object_scales()
         self._reset_sim()
         self._init_rendering()
@@ -1104,3 +1120,40 @@ class BaseEnv(object):
         damping_norm = np.clip(damping_norm, 0.0, 1.0)
         
         return np.array([mass_norm, friction_norm, stiffness_norm, damping_norm], dtype=np.float32)
+
+    def sample_physics(self):
+        """Sample a dict of physical params from preset ranges."""
+        rng = self.rng if hasattr(self, "rng") else np.random
+        p = {}
+        for k, (lo, hi) in self.DEFAULT_PHYSICS_RANGE.items():
+            p[k] = rng.uniform(lo, hi)
+        return p
+    
+    def apply_physics_params(self, p: dict):
+        """Write params into simulator."""
+        # Set the physics parameters
+        self.object_mass = p["mass"]
+        self.friction_coeff = p["friction"]
+        self.elastic_stiffness = p["stiffness"]
+        self.damping_stiffness = p["damping"]
+        
+        # For objects that have already been created, update their parameters
+        if hasattr(self, "soft_ids") and len(self.soft_ids) > 0:
+            for soft_id in self.soft_ids:
+                self.sim.changeDynamics(
+                    soft_id, 
+                    -1, 
+                    mass=self.object_mass,
+                    lateralFriction=self.friction_coeff
+                )
+                # Note: For some parameters like stiffness and damping,
+                # you might need to recreate the object as they can't be changed after creation
+
+    def is_success(self):
+        """Check if the task has been completed successfully.
+        Override in subclasses to provide task-specific success criteria.
+        """
+        # Default implementation uses reward threshold
+        reward = self.compute_reward()
+        # Threshold of 0.7 is a common value for success
+        return reward >= 0.7

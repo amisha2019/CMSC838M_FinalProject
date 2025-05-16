@@ -135,7 +135,7 @@ def main(cfg):
 
     # init agent
     agent = get_agent(cfg.agent.agent_name)(cfg)
-    if cfg.training.ckpt is not None:
+    if hasattr(cfg.training, 'ckpt') and cfg.training.ckpt is not None:
         agent.load_snapshot(cfg.training.ckpt)
         start_epoch_ix = int(cfg.training.ckpt.split("/")[-1].split(".")[0][4:])
         logger.info(f"Loaded checkpoint from {cfg.training.ckpt}, starting from epoch {start_epoch_ix}")
@@ -147,6 +147,18 @@ def main(cfg):
     global_step = 0
     for epoch_ix in tqdm(range(start_epoch_ix, cfg.training.num_epochs)):
         batch_ix = 0
+        
+        # Add-on #4: Extreme-curriculum sampling
+        if hasattr(cfg.training, 'use_curriculum') and cfg.training.use_curriculum and hasattr(cfg.training, 'curriculum_T'):
+            # Linearly increase the physics parameter range over the first curriculum_T epochs
+            curriculum_T = cfg.training.curriculum_T
+            curr_scale = min(1.0, epoch_ix / curriculum_T)
+            logger.info(f"Epoch {epoch_ix}: Setting curriculum scale to {curr_scale:.3f}")
+            try:
+                train_dataset.set_phys_range(scale=curr_scale)
+            except Exception as e:
+                logger.warning(f"Failed to set physics range: {str(e)}")
+        
         for batch in tqdm(train_loader, leave=False, desc="Batches"):
             train_metrics = agent.update(
                 batch, vis=epoch_ix % cfg.training.vis_interval == 0 and batch_ix == 0

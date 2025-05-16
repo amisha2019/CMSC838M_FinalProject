@@ -213,6 +213,29 @@ class EquiBotAgent(DPAgent):
 
             pdb.set_trace()
 
+        # Add-on #1: Physics-supervision loss
+        L_phys = 0.0
+        if hasattr(self.actor, 'physics_enc') and self.actor.physics_enc is not None and 'physics_vec' in batch:
+            # Get the physics vector from the batch
+            physics_vec = batch["physics_vec"]
+            if isinstance(physics_vec, np.ndarray):
+                physics_vec = torch.from_numpy(physics_vec).to(self.device)
+                
+            # Process point cloud through physics encoder
+            pc = batch["pc"].reshape(-1, batch["pc"].shape[-2], 3)
+            phys_latent = self.actor.physics_enc(pc)
+            
+            # Compute reconstruction loss using decoder
+            L_phys = nn.functional.mse_loss(self.actor.physics_enc.decoder(phys_latent), physics_vec)
+            
+            # Check if lambda_phys is in config
+            lambda_phys = 0.1  # Default weight
+            if hasattr(self.cfg, 'loss') and hasattr(self.cfg.loss, 'lambda_phys'):
+                lambda_phys = self.cfg.loss.lambda_phys
+                
+            # Add to total loss
+            loss = loss + lambda_phys * L_phys
+
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
@@ -259,10 +282,17 @@ class EquiBotAgent(DPAgent):
                     ).mean(),
                 }
             )
+        
+        # Add physics loss to metrics if it exists
+        if L_phys > 0:
+            metrics["physics_loss"] = L_phys
 
         return metrics
 
     def save_snapshot(self, save_path):
+        # Clean up any compiled models before saving
+        self._cleanup_compiled_models()
+        
         state_dict = dict(
             actor=self.actor.state_dict(),
             ema_model=self.actor.ema.averaged_model.state_dict(),
@@ -272,6 +302,35 @@ class EquiBotAgent(DPAgent):
             ac_normalizer=self.ac_normalizer.state_dict(),
         )
         torch.save(state_dict, save_path)
+        
+        # Restore compiled models after saving
+        self._restore_compiled_models()
+        
+    def _cleanup_compiled_models(self):
+        """Clean up compiled models before saving to prevent serialization issues."""
+        if hasattr(self.actor, 'encoder_handle'):
+            # Store reference to original attribute for restoration
+            self._encoder_handle_backup = self.actor.encoder_handle
+            self._noise_pred_net_handle_backup = self.actor.noise_pred_net_handle
+            
+            # Delete the compiled attributes
+            del self.actor.encoder_handle
+            del self.actor.noise_pred_net_handle
+            
+            # Restore with non-compiled versions
+            self.actor.encoder_handle = self.actor.encoder
+            self.actor.noise_pred_net_handle = self.actor.noise_pred_net
+        
+    def _restore_compiled_models(self):
+        """Restore compiled models after saving."""
+        if hasattr(self, '_encoder_handle_backup'):
+            # Restore original compiled references if they exist
+            self.actor.encoder_handle = self._encoder_handle_backup
+            self.actor.noise_pred_net_handle = self._noise_pred_net_handle_backup
+            
+            # Clean up backup references
+            del self._encoder_handle_backup
+            del self._noise_pred_net_handle_backup
 
     def fix_checkpoint_keys(self, state_dict):
         fixed_state_dict = dict()

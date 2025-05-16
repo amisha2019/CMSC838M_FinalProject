@@ -31,6 +31,10 @@ class BaseDataset(Dataset):
         self.reduce_horizon_dim = cfg["reduce_horizon_dim"]
         self.shuffle_pc = cfg["shuffle_pc"]
         self.min_demo_length = cfg["min_demo_length"]
+        
+        # Add-on #2: Physics-MixUp augmentation
+        self.mixup_prob = cfg.get("mixup_prob", 0.0)
+        
         if "latency" in cfg:
             self.state_latency = cfg["latency"]["state"]
             self.state_latency_random = cfg["latency"]["random"]
@@ -174,6 +178,30 @@ class BaseDataset(Dataset):
         # Process physics vector if it exists - keep only first observation's physics parameters
         if "physics_vec" in ret and len(ret["physics_vec"]) > 0:
             ret["physics_vec"] = ret["physics_vec"][0]
+            
+        # Add-on #2: Physics-MixUp augmentation
+        if hasattr(self, 'mixup_prob') and self.mixup_prob > 0 and np.random.random() < self.mixup_prob:
+            # Get a random second sample for mixup
+            idx2 = np.random.randint(0, len(self))
+            fn2 = self.file_names[idx2]
+            key_fn = lambda x: "_".join(x.split("/")[-1].split("_")[:-1])
+            offset_t2 = self.ep_t_offset_dict[key_fn(fn2)]
+            ep_t2 = int(fn2.split("_")[-1][1:-4]) - offset_t2
+            
+            # Load second sample
+            samp2 = self.__getitem__(idx2)
+            
+            # Sample beta distribution for mixup coefficient
+            alpha = np.random.beta(0.2, 0.2)  # produces values near 0 or 1
+            
+            # Apply mixup to point cloud, actions, and physics vector
+            for key in ['pc', 'action']:
+                if key in ret and key in samp2:
+                    ret[key] = alpha * ret[key] + (1-alpha) * samp2[key]
+            
+            # Apply mixup to physics vector if it exists
+            if 'physics_vec' in ret and 'physics_vec' in samp2:
+                ret['physics_vec'] = alpha * ret['physics_vec'] + (1-alpha) * samp2['physics_vec']
 
         if self.obs_horizon == 1 and self.pred_horizon == 1 and self.reduce_horizon_dim:
             ret = {k: v[0] for k, v in ret.items()}
@@ -193,6 +221,43 @@ class BaseDataset(Dataset):
                     # If physics_vec is not in the data, use default values
                     self.cache[fn][k] = np.array([0.5, 0.5, 0.5, 0.5], dtype=np.float32)
             del data
+            
+    # Add-on #4: Extreme-curriculum sampling
+    def set_phys_range(self, scale=1.0):
+        """
+        Set the physics parameter ranges based on the curriculum scale.
+        
+        Args:
+            scale: A value between 0.0 and 1.0 controlling the width of the physics range.
+                  0.0 means narrow range centered around defaults, 1.0 means full range.
+        """
+        # Baseline ranges (safe defaults)
+        mass_min, mass_max = 0.5, 1.0
+        friction_min, friction_max = 0.3, 1.0
+        stiffness_min, stiffness_max = 150.0, 200.0
+        damping_min, damping_max = 0.3, 0.7
+        
+        # Full ranges (extreme values)
+        full_mass_min, full_mass_max = 0.3, 2.0
+        full_friction_min, full_friction_max = 0.1, 3.0
+        full_stiffness_min, full_stiffness_max = 120.0, 250.0
+        full_damping_min, full_damping_max = 0.1, 0.9
+        
+        # Interpolate between baseline and full ranges
+        self.curr_mass_min = mass_min + scale * (full_mass_min - mass_min)
+        self.curr_mass_max = mass_max + scale * (full_mass_max - mass_max)
+        self.curr_friction_min = friction_min + scale * (full_friction_min - friction_min)
+        self.curr_friction_max = friction_max + scale * (full_friction_max - friction_max)
+        self.curr_stiffness_min = stiffness_min + scale * (full_stiffness_min - stiffness_min)
+        self.curr_stiffness_max = stiffness_max + scale * (full_stiffness_max - stiffness_max)
+        self.curr_damping_min = damping_min + scale * (full_damping_min - damping_min)
+        self.curr_damping_max = damping_max + scale * (full_damping_max - damping_max)
+        
+        print(f"Updated physics ranges (scale={scale:.2f}):")
+        print(f"  Mass: [{self.curr_mass_min:.2f}, {self.curr_mass_max:.2f}]")
+        print(f"  Friction: [{self.curr_friction_min:.2f}, {self.curr_friction_max:.2f}]")
+        print(f"  Stiffness: [{self.curr_stiffness_min:.1f}, {self.curr_stiffness_max:.1f}]")
+        print(f"  Damping: [{self.curr_damping_min:.2f}, {self.curr_damping_max:.2f}]")
 
     def _process_data_from_file(
         self, fn, keys=["pc", "eef_pos", "action"], aug_idx=None

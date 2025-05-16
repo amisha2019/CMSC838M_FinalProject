@@ -1,0 +1,36 @@
+# Variant D: PI-EquiBot + MixUp + Latent-Drop
+prefix: pi_equibot_mixup_drop
+device: cuda
+mode: train
+log_dir: logs2/${mode}
+eval_data_path: null
+use_wandb: true
+seed: 0
+
+# Include all defaults from base.yaml
+defaults:
+  - ../base
+
+# PI-EquiBot configuration
+model:
+  # Enable physics embedding
+  use_physics_embed: true
+  physics_embed_dim: 4  # [mass, friction, stiffness, damping]
+  latent_dropout: 0.2   # Add-on #3: Latent-dropout with p=0.2
+
+# Physics supervision loss enabled
+loss:
+  lambda_phys: 0.1     # Physics supervision weight
+
+# Enable MixUp augmentation
+data:
+  dataset:
+    mixup_prob: 0.5    # 50% chance of applying mixup
+
+# No curriculum learning
+train:
+  use_curriculum: false
+
+# No test-time adaptation during evaluation
+eval:
+  use_test_time_adaptation: false 

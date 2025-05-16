@@ -1,0 +1,39 @@
+# PI-EquiBot Plus - Enhanced model configuration with add-ons
+prefix: pi_equibot_plus
+device: cuda
+mode: train
+log_dir: logs2/${mode}
+eval_data_path: null
+use_wandb: true
+seed: 0
+
+# Include all defaults from base.yaml
+defaults:
+  - base
+
+# Modifications for enhanced PI-EquiBot
+model:
+  # Physics embedding settings
+  physics_embed_dim: 4  # [mass, friction, stiffness, damping]
+  use_physics_embed: true
+  latent_dropout: 0.2   # Add-on #3: Latent-dropout
+
+# Add-on #1: Physics-supervision loss
+loss:
+  lambda_phys: 0.1     # Weight for physics supervision loss
+
+# Add-on #2: Physics-MixUp augmentation
+data:
+  dataset:
+    mixup_prob: 0.5     # Probability of applying mixup
+
+# Add-on #4: Extreme-curriculum sampling 
+train:
+  curriculum_T: 10      # Widen physics range over first 10 epochs
+  use_curriculum: true  # Toggle curriculum learning
+
+# Add-on #5: Test-time Adaptation
+eval:
+  use_test_time_adaptation: true
+  tta_num_steps: 3      # Number of adaptation steps (1-3)
+  tta_learning_rate: 0.001 

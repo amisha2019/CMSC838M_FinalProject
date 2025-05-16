@@ -1,0 +1,5 @@
+- +mode=train
+- +prefix=test_run
+- +data.dataset.path=/fs/nexus-projects/Sketch_REBEL/equibot/data/close_phy/pcs
+- +data.dataset.num_workers=1
+- +device=cuda

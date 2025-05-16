@@ -9,6 +9,13 @@ class PhysicsEncoder(nn.Module):
         self.mlp2 = nn.Linear(64, 128)
         self.mlp3 = nn.Linear(128, 256)
         self.head = nn.Linear(256, out_dim)
+        
+        # Add decoder head for physics-supervision loss
+        self.decoder = nn.Sequential(
+            nn.Linear(out_dim, 64), 
+            nn.ReLU(),
+            nn.Linear(64, out_dim)  # reconstruct same out_dim vector
+        )
 
     def forward(self, pc: torch.Tensor) -> torch.Tensor:
         # pc shape: [B, N, 3]

@@ -14,6 +14,7 @@ from omegaconf import OmegaConf
 from equibot.policies.utils.media import combine_videos, save_video
 from equibot.policies.utils.misc import get_env_class, get_dataset, get_agent
 from equibot.envs.subproc_vec_env import SubprocVecEnv
+from equibot.policies.utils.test_time_adaptation import apply_test_time_adaptation
 
 
 def organize_obs(render, rgb_render, state):
@@ -43,6 +44,7 @@ def run_eval(
     verbose=False,
     use_wandb=False,
     ckpt_name=None,
+    use_test_time_adaptation=False,
 ):
     if vis:
         vis_frames = []
@@ -94,6 +96,16 @@ def run_eval(
 
             # predict actions
             st = time.time()
+            
+            # Add-on #5: Apply test-time adaptation if enabled
+            if use_test_time_adaptation and hasattr(agent, 'actor') and hasattr(agent.actor, 'physics_enc'):
+                print("Applying test-time adaptation to physics encoder...")
+                # Apply adaptation on first inference only, for the first episode
+                if not hasattr(agent, '_tta_applied') or not agent._tta_applied:
+                    agent.actor = apply_test_time_adaptation(agent.actor, agent_obs)
+                    agent._tta_applied = True
+                    print("Test-time adaptation applied")
+            
             ac, ac_dict = agent.act(agent_obs, return_dict=True)
             print(f"Inference time: {time.time() - st:.3f}s")
             if ac_dict is not None:
@@ -189,7 +201,7 @@ def run_eval(
     return metrics
 
 
-@hydra.main(config_path="configs", config_name="fold_synthetic")
+@hydra.main(config_path="configs", config_name="fold_synthetic", version_base=None)
 def main(cfg):
     assert cfg.mode == "eval"
     device = torch.device(cfg.device)
@@ -258,6 +270,7 @@ def main(cfg):
             reduce_horizon_dim=cfg.data.dataset.reduce_horizon_dim,
             verbose=True,
             ckpt_name=ckpt_name,
+            use_test_time_adaptation=cfg.use_test_time_adaptation,
         )
         mean_rew = eval_metrics["rew"]
         print(f"Evaluation results: mean rew = {mean_rew}")

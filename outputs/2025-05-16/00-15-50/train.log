@@ -1,0 +1,30 @@
+[2025-05-16 00:15:51,040][__main__][INFO] - Starting training...
+[2025-05-16 00:15:51,040][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:15:51,040][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:15:51,040][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:15:51,040][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:15:51,042][__main__][INFO] - Starting training...
+[2025-05-16 00:15:51,042][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:15:51,042][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:15:51,042][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:15:51,042][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:15:51,045][__main__][INFO] - Starting training...
+[2025-05-16 00:15:51,045][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:15:51,045][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:15:51,045][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:15:51,045][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:15:51,049][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:15:51,051][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:15:51,054][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:16:00,897][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 00:16:00,897][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 00:16:00,897][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 00:16:22,911][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 00:16:23,191][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 00:16:23,260][__main__][INFO] - Initialized evaluation environment

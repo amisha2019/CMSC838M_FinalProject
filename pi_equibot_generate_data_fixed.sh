@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=pi_data_gen
-#SBATCH --output=/fs/nexus-projects/Sketch_VLM_RL/equibit/pi_data_gen_%j.log
-#SBATCH --error=/fs/nexus-projects/Sketch_VLM_RL/equibit/pi_data_gen_%j.err
+#SBATCH --output=/fs/nexus-projects/Sketch_REBEL/equibot/data/pi_data_gen_%j.log
+#SBATCH --error=/fs/nexus-projects/Sketch_REBEL/equibot/data/pi_data_gen_%j.err
 #SBATCH --time=12:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=32G
@@ -10,6 +10,7 @@
 #SBATCH --partition=scavenger
 #SBATCH --qos=scavenger
 #SBATCH --account=scavenger
+
 
 # Load conda
 source /fs/cml-scratch/amishab/miniconda3/etc/profile.d/conda.sh
@@ -22,7 +23,7 @@ export LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6
 cd /fs/cml-scratch/amishab/equibot
 
 # Create data output directory structure
-DATA_DIR=/fs/cml-scratch/amishab/data/fold_physics
+DATA_DIR=/fs/nexus-projects/Sketch_REBEL/equibot/data/close_phy
 PCS_DIR=$DATA_DIR/pcs
 IMAGES_DIR=$DATA_DIR/images
 mkdir -p $DATA_DIR
@@ -45,7 +46,7 @@ echo "Found $EXISTING_FILES existing data files"
 
 # Number of episodes to generate and maximum attempts
 NUM_TO_GENERATE=$((TARGET_EPISODES - EXISTING_FILES))
-MAX_ATTEMPTS=300
+MAX_ATTEMPTS=5000
 ATTEMPTS=0
 GENERATED=0
 
@@ -64,8 +65,8 @@ while [ $SUCCESS_COUNT -lt $NUM_TO_GENERATE ] && [ $ATTEMPTS -lt $MAX_ATTEMPTS ]
     ATTEMPTS=$((ATTEMPTS + 1))
     
     # Randomize physics parameters with safer ranges
-    MASS=$(python -c "import numpy as np; print(np.random.uniform(0.3, 1.5))")
-    FRICTION=$(python -c "import numpy as np; print(np.random.uniform(0.8, 3.0))")
+    MASS=$(python -c "import numpy as np; print(np.random.uniform(0.3, 2.0))")
+    FRICTION=$(python -c "import numpy as np; print(np.random.uniform(0.1, 3.0))")
     STIFFNESS=$(python -c "import numpy as np; print(np.random.uniform(120.0, 250.0))")
     
     echo "Attempt $ATTEMPTS (Successful: $SUCCESS_COUNT/$NUM_TO_GENERATE): Mass=$MASS, Friction=$FRICTION, Stiffness=$STIFFNESS"
@@ -75,7 +76,7 @@ while [ $SUCCESS_COUNT -lt $NUM_TO_GENERATE ] && [ $ATTEMPTS -lt $MAX_ATTEMPTS ]
     
     # Run data generation with more stable parameters and explicitly set num_demos
     python -m equibot.envs.sim_mobile.generate_demos \
-        --task_name fold \
+        --task_name close \
         --cam_num_views 5 \
         --seed $((1000 + $ATTEMPTS)) \
         --data_out_dir $DATA_DIR \
@@ -83,8 +84,8 @@ while [ $SUCCESS_COUNT -lt $NUM_TO_GENERATE ] && [ $ATTEMPTS -lt $MAX_ATTEMPTS ]
         --deform_object_mass $MASS \
         --deform_friction_coeff $FRICTION \
         --deform_elastic_stiffness $STIFFNESS \
-        --num_demos 1 \
-        --data_rew_threshold 0.7 \
+        --num_demos 200 \
+        --data_rew_threshold 0.5 \
         --randomize_rotation \
         --randomize_scale \
         --scale_low 0.8 \

@@ -1,0 +1,36 @@
+[2025-05-16 11:31:05,589][__main__][INFO] - Starting training...
+[2025-05-16 11:31:05,589][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 11:31:05,589][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 11:31:05,589][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 11:31:05,590][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 11:31:05,593][__main__][INFO] - Starting training...
+[2025-05-16 11:31:05,594][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 11:31:05,594][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 11:31:05,594][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 11:31:05,594][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 11:31:05,595][__main__][INFO] - Starting training...
+[2025-05-16 11:31:05,595][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 11:31:05,595][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 11:31:05,595][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 11:31:05,596][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 11:31:05,599][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 11:31:05,603][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 11:31:05,605][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 11:31:30,261][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 11:31:41,746][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-16 11:31:41,746][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-16 11:31:54,849][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 11:31:58,896][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 11:31:59,198][__main__][INFO] - Starting training from scratch
+[2025-05-16 11:32:00,817][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 11:32:00,828][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 11:32:03,491][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 11:32:03,512][equibot.policies.utils.equivariant_diffusion.conditional_unet1d][INFO] - number of parameters: 6.835328e+07
+[2025-05-16 11:32:03,894][__main__][INFO] - Starting training from scratch
+[2025-05-16 11:32:03,915][__main__][INFO] - Starting training from scratch

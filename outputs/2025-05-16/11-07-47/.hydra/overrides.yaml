@@ -1,0 +1,16 @@
+- +mode=train
+- +prefix=test_run
+- +data.dataset.path=/fs/nexus-projects/Sketch_REBEL/equibot/data/close_phy/pcs
+- +data.dataset.num_workers=1
+- +device=cuda
+- +seed=0
+- +env.env_class=close
+- +env.args.task_name=close
+- +training.batch_size=4
+- +training.num_epochs=1
+- +training.lr=3e-5
+- +training.weight_decay=1e-6
+- +training.save_interval=10
+- +training.vis_interval=10
+- +training.eval_interval=10
+- +training.num_eval_episodes=1

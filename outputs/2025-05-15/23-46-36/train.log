@@ -1,0 +1,30 @@
+[2025-05-15 23:46:36,158][__main__][INFO] - Starting training...
+[2025-05-15 23:46:36,158][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:46:36,158][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:46:36,158][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:46:36,159][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:46:36,159][__main__][INFO] - Starting training...
+[2025-05-15 23:46:36,159][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:46:36,159][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:46:36,159][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:46:36,159][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:46:36,160][__main__][INFO] - Starting training...
+[2025-05-15 23:46:36,160][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:46:36,160][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:46:36,160][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:46:36,160][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:46:36,167][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-15 23:46:36,168][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-15 23:46:36,169][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-15 23:47:00,112][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-15 23:47:11,249][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-15 23:47:11,249][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-15 23:47:24,215][__main__][ERROR] - Failed to initialize evaluation environment: [Errno 104] Connection reset by peer
+[2025-05-15 23:47:29,760][__main__][ERROR] - Failed to initialize evaluation environment: [Errno 104] Connection reset by peer
+[2025-05-15 23:47:29,981][__main__][ERROR] - Failed to initialize evaluation environment: [Errno 104] Connection reset by peer

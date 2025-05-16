@@ -432,24 +432,37 @@ def run_demo(args, counter=0):
 
     final_rew = env.compute_reward()
     print(f"Episode reward: {final_rew}")
+    success = env.is_success()
+    print(f"Success status: {success}")
 
-    if final_rew >= args.data_rew_threshold:
+    if success:
         # write video to file
         video_path = os.path.join(args.data_out_dir, "images", episode_name + ".mp4")
         save_video(np.array(imgs), video_path, fps=10)
         print(f"Saved video to {video_path}.")
-        return 1
+        
+        # Save physics parameters with each file
+        for f in saved_files:
+            # Load existing file
+            data = np.load(f)
+            # Create updated data dict with physics vector
+            data_dict = {k: data[k] for k in data.files}
+            
+            # Make sure physics vector is included
+            if "physics_vec" not in data_dict:
+                data_dict["physics_vec"] = env.get_physics_vector()
+                
+            # Resave the file
+            np.savez(f, **data_dict)
+            
+        print(f"Saved {len(saved_files)} point cloud files with physics parameters")
+        return True
     else:
-        # DEBUGGING: Temporarily always keep files regardless of reward
-        # Original behavior: delete files if reward is below threshold
-        print(f"KEEPING FILES FOR DEBUGGING (reward {final_rew} < threshold {args.data_rew_threshold})")
-        video_path = os.path.join(args.data_out_dir, "images", episode_name + "_lowrew.mp4")
-        save_video(np.array(imgs), video_path, fps=10)
-        print(f"Saved debug video to {video_path}.")
-        # Uncomment below line to restore original behavior
-        # for f in saved_files:
-        #     os.remove(f)
-        return 1  # Always return success for debugging
+        # Failed demonstration - clean up files
+        for f in saved_files:
+            os.remove(f)
+        print(f"Episode {counter} failed to meet success criteria (reward: {final_rew}). Files deleted.")
+        return False
 
 
 def get_args(parent=None):
@@ -564,18 +577,52 @@ def main():
     seed_env = args.seed_env
     seed_cam = args.seed_cam
 
+    MAX_PHYSICS_RETRIES = 5  # Maximum number of physics retries before falling back to default
+
     pattern_ix = 0
     for i in tqdm(range(args.num_demos), desc="Demos"):
         success = False
+        physics_retries = 0
+        
         while not success:
             args.seed = (seed * 99999 + pattern_ix) % 100001
             args.seed_env = (seed_env * 99999 + pattern_ix) % 100001
             args.seed_cam = (seed_cam * 99999 + pattern_ix) % 100001
+            
             print(f"Attempting with episode ID: {pattern_ix}")
+            
+            # Create the environment to sample physics
+            env = get_env_class(args.task_name)(args)
+            
+            # For the first few tries, sample different physics
+            if physics_retries < MAX_PHYSICS_RETRIES:
+                print(f"Using randomized physics (attempt {physics_retries+1}/{MAX_PHYSICS_RETRIES})")
+                # Reset will sample physics automatically
+                physics_params = env.physics_params = env.sample_physics()
+                print(f"Physics parameters: {physics_params}")
+            else:
+                print("Using default physics after too many retries")
+                # Override with safer default physics parameters
+                physics_params = {
+                    "mass": 1.0,
+                    "friction": 1.0,
+                    "stiffness": 150.0,
+                    "damping": 1.0
+                }
+                env.physics_params = physics_params
+                env.apply_physics_params(physics_params)
+            
+            # Run the demo with these physics parameters
             success = run_demo(args, pattern_ix)
+            
+            # Check if it was successful
+            if not success:
+                print(f"Episode {pattern_ix} failed. Retrying with different parameters.")
+                physics_retries += 1
+            else:
+                print(f"Success with episode ID: {pattern_ix}")
+            
             pattern_ix += 1
-            if success:
-                print(f"Success with episode ID: {pattern_ix-1}")
 
 
 if __name__ == "__main__":

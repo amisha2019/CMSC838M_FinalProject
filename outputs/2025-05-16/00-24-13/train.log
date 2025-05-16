@@ -1,0 +1,40 @@
+[2025-05-16 00:24:13,321][__main__][INFO] - Starting training...
+[2025-05-16 00:24:13,321][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:24:13,321][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,321][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,322][__main__][INFO] - Starting training...
+[2025-05-16 00:24:13,322][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:24:13,322][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,322][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:24:13,322][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,322][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:24:13,322][__main__][INFO] - Starting training...
+[2025-05-16 00:24:13,322][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:24:13,322][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,322][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,323][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:24:13,324][__main__][INFO] - Starting training...
+[2025-05-16 00:24:13,324][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-16 00:24:13,324][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,324][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-16 00:24:13,324][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-16 00:24:13,332][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:24:13,332][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:24:13,332][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:24:13,334][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'env.args.obs_mode' not found
+    full_key: evaluation....model.obs_mode
+    object_type=dict
+[2025-05-16 00:26:10,569][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 00:26:10,569][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 00:26:10,569][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-16 00:26:24,268][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-16 00:26:40,496][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 00:26:40,555][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 00:26:40,982][__main__][INFO] - Initialized evaluation environment
+[2025-05-16 00:26:46,161][__main__][INFO] - Initialized evaluation environment

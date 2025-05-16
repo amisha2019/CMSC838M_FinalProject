@@ -1,0 +1,6 @@
+[2025-05-15 23:26:28,252][__main__][INFO] - Starting training...
+[2025-05-15 23:26:28,252][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:26:28,252][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:26:28,252][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:26:28,254][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:26:40,075][__main__][INFO] - Initialized dataloader with 3133 samples

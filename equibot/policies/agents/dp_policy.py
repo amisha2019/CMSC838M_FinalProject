@@ -2,6 +2,7 @@ import copy
 import hydra
 import torch
 from torch import nn
+from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 from equibot.policies.vision.pointnet_encoder import PointNetEncoder
 from equibot.policies.utils.diffusion.ema_model import EMAModel
@@ -63,7 +64,13 @@ class DPPolicy(nn.Module):
 
         self._init_torch_compile()
 
-        self.noise_scheduler = hydra.utils.instantiate(cfg.model.noise_scheduler)
+        # Direct instantiation instead of using hydra
+        self.noise_scheduler = DDPMScheduler(
+            num_train_timesteps=cfg.model.noise_scheduler.num_train_timesteps,
+            beta_schedule=cfg.model.noise_scheduler.beta_schedule,
+            clip_sample=cfg.model.noise_scheduler.clip_sample,
+            prediction_type=cfg.model.noise_scheduler.prediction_type
+        )
 
         num_parameters = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print(f"Initialized DP Policy with {num_parameters} parameters")

@@ -1,0 +1,20 @@
+env:
+  env_class: fold
+  dof: 4
+  num_eef: 1
+  eef_dim: 3
+  args:
+    task_name: fold
+    num_eef: 1
+    dof: 4
+    max_episode_length: 100
+    seed: 0
+    randomize_scale: true
+    randomize_rotation: true
+    uniform_scaling: true
+    ac_noise: 0.0
+    vis: false
+    freq: 5
+    scale_low: 0.8
+    scale_high: 1.2
+    scale_aspect_limit: 1.3

@@ -1,0 +1,48 @@
+[2025-05-15 23:35:58,029][__main__][INFO] - Starting training...
+[2025-05-15 23:35:58,029][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:35:58,030][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,030][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,030][__main__][INFO] - Starting training...
+[2025-05-15 23:35:58,030][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:35:58,030][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:35:58,030][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,030][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,031][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:35:58,031][__main__][INFO] - Starting training...
+[2025-05-15 23:35:58,031][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:35:58,031][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,031][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,031][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:35:58,032][__main__][INFO] - Starting training...
+[2025-05-15 23:35:58,032][__main__][INFO] - Original Hydra directory: /fs/cml-scratch/amishab/equibot
+[2025-05-15 23:35:58,032][__main__][INFO] - Target output directory: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,032][__main__][INFO] - Changed working directory to: /fs/nexus-projects/Sketch_VLM_RL/equibit
+[2025-05-15 23:35:58,032][__main__][WARNING] - Hydra config directory not found at /fs/cml-scratch/amishab/equibot/.hydra
+[2025-05-15 23:35:58,041][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'model.hidden_dim' not found
+    full_key: evaluation....model.encoder.c_dim
+    object_type=dict
+[2025-05-15 23:35:58,042][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'model.hidden_dim' not found
+    full_key: evaluation....model.encoder.c_dim
+    object_type=dict
+[2025-05-15 23:35:58,043][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'model.hidden_dim' not found
+    full_key: evaluation....model.encoder.c_dim
+    object_type=dict
+[2025-05-15 23:35:58,043][__main__][ERROR] - Failed to initialize wandb: Interpolation key 'model.hidden_dim' not found
+    full_key: evaluation....model.encoder.c_dim
+    object_type=dict
+[2025-05-15 23:38:34,656][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-15 23:38:34,656][__main__][INFO] - Initialized dataloader with 6447 samples
+[2025-05-15 23:38:44,731][__main__][ERROR] - Failed to initialize evaluation environment: Key 'num_eval_episodes' is not in struct
+    full_key: training.num_eval_episodes
+    object_type=dict
+[2025-05-15 23:38:44,731][__main__][ERROR] - Failed to initialize evaluation environment: Key 'num_eval_episodes' is not in struct
+    full_key: training.num_eval_episodes
+    object_type=dict
+[2025-05-15 23:38:50,586][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-15 23:38:50,586][__main__][INFO] - Initialized dataloader with 7626 samples
+[2025-05-15 23:38:50,625][__main__][ERROR] - Failed to initialize evaluation environment: Key 'num_eval_episodes' is not in struct
+    full_key: training.num_eval_episodes
+    object_type=dict
+[2025-05-15 23:38:50,625][__main__][ERROR] - Failed to initialize evaluation environment: Key 'num_eval_episodes' is not in struct
+    full_key: training.num_eval_episodes
+    object_type=dict

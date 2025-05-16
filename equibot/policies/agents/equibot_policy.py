@@ -4,12 +4,12 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import numpy as np
+from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 
 from equibot.policies.vision.sim3_encoder import SIM3Vec4Latent
 from equibot.policies.vision.physics_encoder import PhysicsEncoder
 from equibot.policies.utils.diffusion.ema_model import EMAModel
 from equibot.policies.utils.equivariant_diffusion.conditional_unet1d import VecConditionalUnet1D
-from equibot.policies.utils.diffusion.diffusion_controller import DiffusionController
 
 
 def vec2mat(vec):
@@ -28,6 +28,7 @@ def vec2mat(vec):
 class EquiBotPolicy(nn.Module):
     def __init__(self, cfg, device="cpu"):
         nn.Module.__init__(self)
+        self.cfg = cfg  # Add cfg as instance variable for access
         self.obs_mode = cfg.model.obs_mode
         self.ac_mode = cfg.model.ac_mode
         self.use_torch_compile = cfg.model.use_torch_compile
@@ -48,7 +49,14 @@ class EquiBotPolicy(nn.Module):
 
         # Observation, action dimensions and types
         self.encoder = SIM3Vec4Latent(
-            hidden_dim=cfg.model.hidden_dim, out_dim=cfg.model.hidden_dim * 3
+            c_dim=cfg.model.encoder.c_dim,
+            backbone_type=cfg.model.encoder.backbone_type,
+            backbone_args={
+                "h_dim": cfg.model.hidden_dim,
+                "c_dim": cfg.model.encoder.c_dim,
+                "num_layers": cfg.model.encoder.backbone_args.num_layers,
+                "knn": cfg.model.encoder.backbone_args.knn
+            }
         )
         
         # Add physics embedding dimension to the latent dimension
@@ -57,11 +65,16 @@ class EquiBotPolicy(nn.Module):
         if self.ac_mode == "diffusion":
             dim_in = 4 * 7  # 4 keypoints with 7 DOF each
             self.noise_pred_net = VecConditionalUnet1D(
-                in_chans=dim_in,
-                cond_chans=latent_dim,
-                schedule_cfg=cfg.model.noise_scheduler,
+                input_dim=dim_in,
+                cond_dim=latent_dim,
             )
-            self.noise_scheduler = DiffusionController(cfg.model.noise_scheduler, device)
+            # Direct instantiation instead of using hydra
+            self.noise_scheduler = DDPMScheduler(
+                num_train_timesteps=cfg.model.noise_scheduler.num_train_timesteps,
+                beta_schedule=cfg.model.noise_scheduler.beta_schedule,
+                clip_sample=cfg.model.noise_scheduler.clip_sample,
+                prediction_type=cfg.model.noise_scheduler.prediction_type
+            )
         else:
             raise ValueError(f"Unknown ac_mode: {self.ac_mode}")
 
@@ -76,7 +89,17 @@ class EquiBotPolicy(nn.Module):
         self.ema = EMAModel(model=copy.deepcopy(self.nets), power=0.75)
 
         if self.use_torch_compile:
-            self.compiled = False
+            self._init_torch_compile()
+        else:
+            # Initialize handles to point to the original modules
+            self.encoder_handle = self.encoder
+            self.noise_pred_net_handle = self.noise_pred_net
+
+    def _init_torch_compile(self):
+        """Initialize compiled versions of modules when torch_compile is enabled."""
+        self.encoder_handle = torch.compile(self.encoder)
+        self.noise_pred_net_handle = torch.compile(self.noise_pred_net)
+        self.compiled = True
 
     def forward(self, obs, ema=True, physics_vec=None):
         """Forward pass through the policy.
@@ -99,12 +122,12 @@ class EquiBotPolicy(nn.Module):
         if O > 1:
             # multi-observation
             pc = obs["pc"].reshape(-1, P, 3)  # [B*O, P, 3]
-            z_local = self.nets["encoder"](pc)  # [B*O, 3*hidden_dim]
+            z_local = self.encoder_handle(pc)  # [B*O, 3*hidden_dim]
             z_local = z_local.reshape(B, O, -1)  # [B, O, 3*hidden_dim]
             z = z_local[:, -1].reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
         else:
             pc = obs["pc"].reshape(-1, P, 3)  # [B, P, 3]
-            z = self.nets["encoder"](pc)  # [B, 3*hidden_dim]
+            z = self.encoder_handle(pc)  # [B, 3*hidden_dim]
             z = z.reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
 
         if ema:
@@ -125,6 +148,11 @@ class EquiBotPolicy(nn.Module):
                 
                 # Process PC to get physics embedding
                 phys_latent = ema_nets["physics_enc"](pc[:B])  # [B, physics_embed_dim]
+                
+                # Add-on #3: Latent-dropout (stochastic FiLM)
+                if self.training and hasattr(self.cfg.model, 'latent_dropout') and self.cfg.model.latent_dropout > 0.0:
+                    mask = torch.rand_like(phys_latent[:, :1]) > self.cfg.model.latent_dropout
+                    phys_latent = phys_latent * mask
                 
                 # Reshape to match the z tensor dimensions
                 phys_latent = phys_latent.unsqueeze(1).reshape(B, 1, -1, 1)
@@ -149,11 +177,11 @@ class EquiBotPolicy(nn.Module):
             z_flat = z.reshape(B, Ho, -1)
             
             if ema:
-                noise_hat = ema_nets["noise_pred_net"](
+                noise_hat = self.noise_pred_net_handle(
                     torch.cat([q_k_flat, z_flat], dim=-1), t=torch.zeros(B, device=device)
                 )
             else:
-                noise_hat = self.nets["noise_pred_net"](
+                noise_hat = self.noise_pred_net_handle(
                     torch.cat([q_k_flat, z_flat], dim=-1), t=torch.zeros(B, device=device)
                 )
                 
@@ -171,12 +199,12 @@ class EquiBotPolicy(nn.Module):
         if O > 1:
             # multi-observation
             pc = obs["pc"].reshape(-1, P, 3)  # [B*O, P, 3]
-            z_local = self.nets["encoder"](pc)  # [B*O, 3*hidden_dim]
+            z_local = self.encoder_handle(pc)  # [B*O, 3*hidden_dim]
             z_local = z_local.reshape(B, O, -1)  # [B, O, 3*hidden_dim]
             z = z_local[:, -1].reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
         else:
             pc = obs["pc"].reshape(-1, P, 3)  # [B, P, 3]
-            z = self.nets["encoder"](pc)  # [B, 3*hidden_dim]
+            z = self.encoder_handle(pc)  # [B, 3*hidden_dim]
             z = z.reshape(B, 1, -1, 3)  # [B, 1, hidden_dim, 3]
 
         if ema:
@@ -214,31 +242,38 @@ class EquiBotPolicy(nn.Module):
             # Reshape to [B, Ho, 28] for noise_pred_net
             x_flat = x.reshape(B, Ho, -1)
             z_flat = z.reshape(B, Ho, -1)
-            ema_nets = self.ema.averaged_model
             
-            # Generate samples from noise using DDPM
+            # Generate samples from noise using the scheduler
             if ema:
-                def model_fn(x, t, cond):
-                    if cond is not None:
+                def model_fn(x_t, t, context=None):
+                    # Prepare input for noise_pred_net
+                    if context is not None:
                         # [B, Ho, C] + [B, Ho, cond_C] -> [B, Ho, C + cond_C]
-                        model_input = torch.cat([x, cond], dim=-1)
+                        model_input = torch.cat([x_t, context], dim=-1)
                     else:
-                        model_input = x
-                    return ema_nets["noise_pred_net"](model_input, t=t)
+                        model_input = x_t
+                    return self.noise_pred_net_handle(model_input, t=t)
             else:
-                def model_fn(x, t, cond):
-                    if cond is not None:
+                def model_fn(x_t, t, context=None):
+                    if context is not None:
                         # [B, Ho, C] + [B, Ho, cond_C] -> [B, Ho, C + cond_C]
-                        model_input = torch.cat([x, cond], dim=-1)
+                        model_input = torch.cat([x_t, context], dim=-1)
                     else:
-                        model_input = x
-                    return self.nets["noise_pred_net"](model_input, t=t)
+                        model_input = x_t
+                    return self.noise_pred_net_handle(model_input, t=t)
 
-            # Sample using diffusion model
-            samples = self.noise_scheduler.p_sample_loop(
-                model_fn, x_flat.shape, x_flat, z_flat
-            )
-
-            # Reshape to keypoint format: [B, Ho, 4, 7]
-            q_k = samples.reshape(B, Ho, 4, 7)
+            # Use the scheduler's native sampling
+            self.noise_scheduler.set_timesteps(1000, device=device)
+            
+            # Start with noise and gradually denoise
+            curr_sample = x_flat
+            for t in self.noise_scheduler.timesteps:
+                # Get model prediction
+                with torch.no_grad():
+                    noise_pred = model_fn(curr_sample, t, z_flat)
+                # Denoise one step
+                curr_sample = self.noise_scheduler.step(noise_pred, t, curr_sample).prev_sample
+            
+            # Reshape back to keypoint format: [B, Ho, 4, 7]
+            q_k = curr_sample.reshape(B, Ho, 4, 7)
             return q_k

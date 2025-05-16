@@ -1,0 +1,81 @@
+# Default configurations for grid evaluation
+
+# Task parameters
+task: close  # One of: fold, cover, close
+model: /fs/nexus-projects/Sketch_REBEL/equibot/checkpoints/evaluation/close/pi_equibot_full_seed0  # Path to model checkpoint or directory
+variant: E  # Variant name (A, B, C, D, E, F)
+seed: 0  # Random seed
+adapt: 0  # Whether to use test-time adaptation (1) or not (0)
+episodes: 10  # Number of episodes per parameter configuration
+save: /fs/nexus-projects/Sketch_REBEL/equibot/results/evaluation/close_E_seed0.csv  # Path to save CSV results
+verbose: true  # Whether to print verbose output
+
+# Environment parameters
+env:
+  env_class: close  # Environment class name
+  dof: 4  # Degrees of freedom
+  num_eef: 1  # Number of end effectors
+  eef_dim: 3  # End effector dimension
+  args:
+    task_name: close  # Task name
+    num_eef: 1  # Number of end effectors
+    dof: 4  # Degrees of freedom
+    max_episode_length: 100  # Maximum episode length
+    seed: 0  # Random seed
+    randomize_scale: true  # Whether to randomize scale
+    randomize_rotation: true  # Whether to randomize rotation
+    uniform_scaling: true  # Whether to use uniform scaling
+    ac_noise: 0.0  # Action noise
+    vis: false  # Whether to visualize
+    freq: 5  # Frequency
+    scale_low: 0.8  # Minimum scale
+    scale_high: 1.2  # Maximum scale
+    scale_aspect_limit: 1.3  # Maximum aspect ratio
+
+# Dataset parameters
+data:
+  dataset:
+    dof: 4  # Degrees of freedom
+    num_eef: 1  # Number of end effectors
+    eef_dim: 3  # End effector dimension
+    reduce_horizon_dim: true  # Whether to reduce horizon dimension
+    min_demo_length: 16  # Minimum demonstration length
+    obs_horizon: 2  # Observation horizon
+    pred_horizon: 16  # Prediction horizon
+
+# Model parameters
+model:
+  obs_horizon: 2  # Observation horizon
+  ac_horizon: 8  # Action horizon
+  pred_horizon: 16  # Prediction horizon
+  obs_mode: pc  # Observation mode (pc, rgb, state)
+  ac_mode: diffusion  # Action mode (diffusion)
+  hidden_dim: 256  # Hidden dimension
+  use_torch_compile: false  # Whether to use torch.compile
+  use_physics_embed: true  # Whether to use physics embedding
+  physics_embed_dim: 4  # Physics embedding dimension [mass, friction, stiffness, damping]
+  noise_scheduler:  # Noise scheduler for the diffusion model
+    _target_: diffusers.schedulers.scheduling_ddpm.DDPMScheduler
+    num_train_timesteps: 100
+    beta_schedule: squaredcos_cap_v2
+    clip_sample: true
+    prediction_type: epsilon
+  encoder:
+    c_dim: 256  # Latent dimension
+    backbone_type: vn_pointnet  # Backbone network type
+    backbone_args:  # Backbone network arguments
+      num_layers: 4  # Number of layers
+      knn: 8  # Number of nearest neighbors
+
+# Agent parameters
+agent:
+  agent_name: equibot  # Agent name
+
+# Training parameters (for eval)
+training:
+  num_eval_episodes: 5  # Number of evaluation episodes
+
+# Evaluation parameters
+eval:
+  use_test_time_adaptation: false  # Whether to use test-time adaptation
+  tta_num_steps: 1  # Number of test-time adaptation steps 
