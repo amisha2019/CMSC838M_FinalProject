@@ -26,7 +26,8 @@ def main(cfg):
     np.random.seed(cfg.seed)
     
     # Fix Hydra output directory
-    output_dir = "/fs/nexus-projects/Sketch_VLM_RL/equibit"
+    output_dir = "/fs/nexus-projects/Sketch_REBEL/equibot/anukriti/checkpoints" 
+    # /fs/nexus-projects/Sketch_VLM_RL/equibit
     os.makedirs(output_dir, exist_ok=True)
     
     # Get Hydra's current output directory

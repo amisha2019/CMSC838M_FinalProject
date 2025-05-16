@@ -145,8 +145,27 @@ class EquiBotAgent(DPAgent):
                 noise, batch
             )  # to debug
         else:
-            vec_eef_noise = torch.randn_like(vec_eef_action, device=self.device)
-            vec_gripper_noise = torch.randn_like(vec_gripper_action, device=self.device)
+            # vec_eef_noise = torch.randn_like(vec_eef_action, device=self.device)
+            # vec_gripper_noise = torch.randn_like(vec_gripper_action, device=self.device)
+            # --- right after you pull batch into torch: ---
+            physics = batch["physics_vec"]                      # [B,4]
+            # pick one proxy for “how wrinkled” it is; e.g. stiffness
+            curv = physics[:,2]                                  # [B]
+            # normalize into [0,1]:
+            curv = (curv - curv.min())/(curv.max()-curv.min()+1e-6)
+            # now map into a small multiplier around 1.0:
+            # β = self.cfg.model.physics_noise_beta  # e.g. 0.5
+            # warp = 1.0 + β*(curv - 0.5)*2.0     # ranges roughly [1-β,1+β
+            warp = 1.0 + self.cfg.model.physics_noise_beta * (curv - 0.5) * 2.0
+
+            warp = warp.view(B,1,1,1)          # broadcastable to vec_eef_noise
+
+            # apply it:
+            vec_eef_noise = torch.randn_like(vec_eef_action) * warp
+            vec_gripper_noise = torch.randn_like(vec_gripper_action) * warp
+
+
+
 
         timesteps = torch.randint(
             0,

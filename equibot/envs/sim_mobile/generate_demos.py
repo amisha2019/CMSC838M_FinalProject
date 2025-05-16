@@ -152,6 +152,13 @@ def run_demo(args, counter=0):
 
     # get initial positions of anchors
     obs = env.reset()
+    # ↓ CRUMPLE PHASE ↓
+    crumple_steps = 200
+    for _ in range(crumple_steps):
+        # zero‐action → just gravity + contact
+        env.step(np.zeros(env.action_space.shape), dummy_reward=True)
+    # now obs is a crumpled cloth; proceed as normal
+
 
     # plan actions
     wait_steps = 0
@@ -437,6 +444,7 @@ def run_demo(args, counter=0):
         # write video to file
         video_path = os.path.join(args.data_out_dir, "images", episode_name + ".mp4")
         save_video(np.array(imgs), video_path, fps=10)
+        print("!!!!!video_path if", video_path)
         print(f"Saved video to {video_path}.")
         return 1
     else:
@@ -445,6 +453,7 @@ def run_demo(args, counter=0):
         print(f"KEEPING FILES FOR DEBUGGING (reward {final_rew} < threshold {args.data_rew_threshold})")
         video_path = os.path.join(args.data_out_dir, "images", episode_name + "_lowrew.mp4")
         save_video(np.array(imgs), video_path, fps=10)
+        print("!!!!video_path else", video_path)
         print(f"Saved debug video to {video_path}.")
         # Uncomment below line to restore original behavior
         # for f in saved_files:

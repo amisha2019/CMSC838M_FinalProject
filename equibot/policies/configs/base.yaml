@@ -80,6 +80,7 @@ model:
   obs_mode: ${env.args.obs_mode}
   ac_mode: ${env.args.ac_mode}
   use_torch_compile: false
+  physics_noise_beta: 0.5    # how much to up/down‑scale your diffusion noise 
 
 training:
   batch_size: 32
@@ -101,6 +102,6 @@ hydra:
     dir: ${log_dir}/${prefix}
 
 wandb:
-  entity: amishab
+  entity: anukriti
   project: equibot
 
