@@ -208,6 +208,7 @@ def main(cfg):
     np.random.seed(cfg.seed)
 
     if cfg.env.vectorize:
+        print("!!!im in vectorize")
         env_fns = []
         env_class = get_env_class(cfg.env.env_class)
         env_args = dict(OmegaConf.to_container(cfg.env.args, resolve=True))
