@@ -1,0 +1,30 @@
+Created base output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision
+Submitted job for task: fold, seed: 42 with job ID: 4419764
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/fold_42
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/fold_42
+Submitted job for task: cover, seed: 42 with job ID: 4419765
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/cover_42
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/cover_42
+Submitted job for task: close, seed: 42 with job ID: 4419767
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/close_42
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/close_42
+Submitted job for task: fold, seed: 123 with job ID: 4419768
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/fold_123
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/fold_123
+Submitted job for task: cover, seed: 123 with job ID: 4419769
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/cover_123
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/cover_123
+Submitted job for task: close, seed: 123 with job ID: 4419770
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/close_123
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/close_123
+Submitted job for task: fold, seed: 456 with job ID: 4419771
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/fold_456
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/fold_456
+Submitted job for task: cover, seed: 456 with job ID: 4419772
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/cover_456
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/cover_456
+Submitted job for task: close, seed: 456 with job ID: 4419773
+Output directory: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/close_456
+Config and sbatch files saved to: /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/close_456
+All jobs submitted!
+Job files were saved to both the current directory and /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision
