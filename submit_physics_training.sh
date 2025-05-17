@@ -68,6 +68,11 @@ mkdir -p /fs/nexus-projects/Sketch_REBEL/equibot/physics_supervision/logs
 source /fs/cml-scratch/amishab/miniconda3/etc/profile.d/conda.sh
 conda activate lfd
 
+
+# Set library path
+export LD_PRELOAD=$CONDA_PREFIX/lib/libstdc++.so.6
+# Set wandb to offline mode (can be changed to online if desired)
+export WANDB_MODE=offline
 # Set PYTHONPATH
 export PYTHONPATH=/fs/cml-scratch/amishab/equibot:$PYTHONPATH
 

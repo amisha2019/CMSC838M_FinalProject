@@ -3,7 +3,7 @@ prefix: physics_supervised
 mode: train
 seed: 42  # Adding random seed
 use_wandb: false  # Disable wandb logging
-device: cuda  # Changed from cuda to cpu since CUDA is not available
+device: cpu  # Changed from cuda to cpu since CUDA is not available
 log_dir: logs/${mode}
 eval_data_path: null
 

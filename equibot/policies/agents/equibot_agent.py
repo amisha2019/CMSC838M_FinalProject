@@ -215,17 +215,29 @@ class EquiBotAgent(DPAgent):
 
         # Add physics supervision loss if enabled
         if hasattr(self.cfg.model, "use_physics_supervision") and self.cfg.model.use_physics_supervision:
-            # Debug the point cloud shape
-            print(f"Point cloud shape: {batch['pc'].shape}")
+            # Remove debug prints
+            # print(f"Point cloud shape: {batch['pc'].shape}")
             
             # Use only the first observation point cloud
             pc_physics = batch["pc"][:, 0] if batch["pc"].dim() == 4 else batch["pc"]
-            print(f"Physics PC shape: {pc_physics.shape}")
+            # print(f"Physics PC shape: {pc_physics.shape}")
             
             # predict then reconstruct the physics vector
-            phys_latent = self.actor.physics_enc(pc_physics)            # [B, D]
-            phys_recon = self.actor.physics_enc.decoder(phys_latent)     # [B, D]
-            L_phys = nn.functional.mse_loss(phys_recon, batch["physics_vec"])
+            phys_latent = self.actor.physics_enc(pc_physics)      # [B, D]
+            phys_recon = self.actor.physics_enc.decode(phys_latent)  # [B, D]
+            
+            # Calculate physics loss - handle potential size mismatch
+            physics_vec = batch["physics_vec"]
+            
+            # Handle the case where physics_vec might be padded
+            valid_length = min(phys_recon.shape[1], physics_vec.shape[1])
+            
+            # Calculate loss only on the valid part of the vectors
+            L_phys = nn.functional.mse_loss(
+                phys_recon[:, :valid_length], 
+                physics_vec[:, :valid_length]
+            )
+            
             total_loss = loss + self.cfg.loss.lambda_phys * L_phys
             
             # Update metrics to include physics loss

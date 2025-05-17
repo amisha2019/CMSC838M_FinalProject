@@ -13,11 +13,37 @@ from glob import glob
 from omegaconf import OmegaConf
 import logging
 import shutil
+from torch.utils.data._utils.collate import default_collate
 
 from equibot.policies.utils.media import save_video
 from equibot.policies.utils.misc import get_env_class, get_dataset, get_agent
 from equibot.policies.vec_eval import run_eval
 from equibot.envs.subproc_vec_env import SubprocVecEnv
+
+
+def custom_collate_fn(batch):
+    """Custom collate function that ensures physics_vec is properly handled."""
+    # Make sure physics_vec is consistent by handling it separately
+    elem = batch[0]
+    if "physics_vec" in elem:
+        physics_vecs = [d.pop("physics_vec") for d in batch]
+        # Convert to tensors if they're not already
+        physics_vecs = [torch.as_tensor(v) if not isinstance(v, torch.Tensor) else v for v in physics_vecs]
+        # Make sure all have the same size
+        max_len = max(v.shape[0] for v in physics_vecs)
+        # Pad if necessary
+        padded_vecs = []
+        for v in physics_vecs:
+            if v.shape[0] < max_len:
+                pad_size = max_len - v.shape[0]
+                padding = torch.zeros(pad_size, device=v.device, dtype=v.dtype)
+                v = torch.cat([v, padding])
+            padded_vecs.append(v)
+        # Stack tensors
+        result = default_collate(batch)
+        result["physics_vec"] = torch.stack(padded_vecs)
+        return result
+    return default_collate(batch)
 
 
 @hydra.main(config_path="configs", config_name="fold_synthetic", version_base=None)
@@ -104,6 +130,7 @@ def main(cfg):
         shuffle=True,
         drop_last=True,
         pin_memory=True,
+        collate_fn=custom_collate_fn,
     )
     cfg.data.dataset.num_training_steps = (
         cfg.training.num_epochs * len(train_dataset) // batch_size

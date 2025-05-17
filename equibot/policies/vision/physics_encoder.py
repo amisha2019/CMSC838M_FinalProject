@@ -24,6 +24,7 @@ class PhysicsEncoder(nn.Module):
         self.head = nn.Linear(256, out_dim)
         
         # —– PHYSICS-SUPERVISION DECODER —–
+        self.out_dim = out_dim  # Store for decoder
         self.decoder = nn.Sequential(
             nn.Linear(out_dim, 64),
             nn.ReLU(),
@@ -41,14 +42,14 @@ class PhysicsEncoder(nn.Module):
         Returns:
             phys: Physics encoding of shape [B, out_dim]
         """
-        # Debug the shape
-        print(f"PhysicsEncoder input shape: {pc.shape}")
+        # Remove debug print statements in production code
+        # print(f"PhysicsEncoder input shape: {pc.shape}")
         
         # Ensure point cloud is in the correct shape [B, 3, N]
         if pc.dim() == 3:
             pc = pc.transpose(1, 2)  # [B, N, 3] -> [B, 3, N]
             
-        print(f"Transposed shape: {pc.shape}")
+        # print(f"Transposed shape: {pc.shape}")
         
         # Extract features
         x = self.backbone(pc)  # [B, 256, N]
@@ -56,3 +57,11 @@ class PhysicsEncoder(nn.Module):
         phys = self.head(x)    # [B, out_dim]
         
         return phys 
+    
+    def decode(self, phys_latent):
+        """
+        Decodes the physics latent vector to the physics vector space.
+        This is a separate method to handle the case where we want to decode
+        without running the full encoder.
+        """
+        return self.decoder(phys_latent) 
